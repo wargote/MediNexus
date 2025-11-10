@@ -1,0 +1,26 @@
+# Build
+bin/
+obj/
+[Bb]uild/
+artifacts/
+
+# User-specific
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS / Rider
+.vs/
+.idea/
+*.DotSettings.user
+
+# Logs
+*.log
+
+# Secrets / settings locales
+appsettings.*.Development.json
+secrets.json
+
+# Publish outputs
+publish/
