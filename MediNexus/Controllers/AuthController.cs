@@ -25,13 +25,20 @@ namespace MediNexus.Api.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest req)
         {
-            var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == req.Email && u.IsActive);
+            var user = await _db.Users
+                .Include(u => u.UserRole) // necesario para obtener el nombre del rol
+                .FirstOrDefaultAsync(u => u.Email == req.Email && u.IsActive);
+
             if (user is null || !_hasher.Verify(req.Password, user.PasswordHash))
                 return Unauthorized("Invalid credentials.");
 
-            var (token, exp) = _jwt.CreateToken(user.Id, user.Email, user.Role);
+            var roleName = user.UserRole?.Name ?? "User";
+
+            var (token, exp) = _jwt.CreateToken(user.Id, user.Email, roleName);
+
             return new AuthResponse(token, exp);
         }
+
 
         [Authorize]
         [HttpPost("logout")]
