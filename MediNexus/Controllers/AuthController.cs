@@ -26,7 +26,7 @@ namespace MediNexus.Api.Controllers
         public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest req)
         {
             var user = await _db.Users
-                .Include(u => u.UserRole) // necesario para obtener el nombre del rol
+                .Include(u => u.UserRole) 
                 .FirstOrDefaultAsync(u => u.Email == req.Email && u.IsActive);
 
             if (user is null || !_hasher.Verify(req.Password, user.PasswordHash))

@@ -60,6 +60,9 @@ namespace MediNexus.Api.Controllers
                 UserProfileId = req.UserProfileId,
                 UserRoleId = req.UserRoleId,
                 UserStatusId = req.UserStatusId,
+                Phone = req.Phone.Trim(),
+                Telephone = req.Telephone.Trim(),
+                Signature = req.Signature.Trim(),
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };
@@ -95,6 +98,9 @@ namespace MediNexus.Api.Controllers
                 created.UserRole?.Name,
                 created.UserStatusId,
                 created.UserStatus?.Name,
+                created.Phone, 
+                created.Telephone,
+                created.Signature,
                 created.IsActive,
                 created.CreatedAt
             );
@@ -123,18 +129,21 @@ namespace MediNexus.Api.Controllers
             return new UserResponse(
                 user.Id,
                 user.DocumentTypeId,
-                user.DocumentType?.Name,   // 👈 Nombre del tipo de documento
+                user.DocumentType?.Name,   
                 user.DocumentNumber,
                 user.FirstName,
                 user.LastName,
                 user.Username,
                 user.Email,
                 user.UserProfileId,
-                user.UserProfile?.Name,    // 👈 Nombre del perfil
+                user.UserProfile?.Name,    
                 user.UserRoleId,
-                user.UserRole?.Name,       // 👈 Nombre del rol
+                user.UserRole?.Name,       
                 user.UserStatusId,
-                user.UserStatus?.Name,     // 👈 Nombre del estado
+                user.UserStatus?.Name,     
+                user.Phone,
+                user.Telephone,
+                user.Signature,
                 user.IsActive,
                 user.CreatedAt
             );
@@ -168,6 +177,9 @@ namespace MediNexus.Api.Controllers
                 user.UserRole?.Name,
                 user.UserStatusId,
                 user.UserStatus?.Name,
+                user.Phone,
+                user.Telephone,
+                user.Signature,
                 user.IsActive,
                 user.CreatedAt
             ));
@@ -205,6 +217,9 @@ namespace MediNexus.Api.Controllers
                 user.UserRole?.Name,
                 user.UserStatusId,
                 user.UserStatus?.Name,
+                user.Phone,
+                user.Telephone,
+                user.Signature,
                 user.IsActive,
                 user.CreatedAt
             );
@@ -252,6 +267,9 @@ namespace MediNexus.Api.Controllers
             user.UserProfileId = req.UserProfileId;
             user.UserRoleId = req.UserRoleId;
             user.UserStatusId = req.UserStatusId;
+            user.Phone = req.Phone;
+            user.Telephone = req.Telephone;
+            user.Signature = req.Signature;
             user.IsActive = req.IsActive;
 
             await _db.SaveChangesAsync();
@@ -281,6 +299,9 @@ namespace MediNexus.Api.Controllers
                 updated.UserRole?.Name,
                 updated.UserStatusId,
                 updated.UserStatus?.Name,
+                updated.Phone, 
+                updated.Telephone,
+                updated.Signature,
                 updated.IsActive,
                 updated.CreatedAt
             );

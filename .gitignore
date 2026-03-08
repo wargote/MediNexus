@@ -24,3 +24,6 @@ secrets.json
 
 # Publish outputs
 publish/
+
+*.dbmdl
+*.jfm

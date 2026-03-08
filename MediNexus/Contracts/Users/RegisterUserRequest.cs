@@ -10,7 +10,10 @@
         int UserProfileId,
         int UserRoleId,
         int UserStatusId,
-        string Password
+        string Password,
+        string Phone,
+        string Telephone,
+        string Signature
     );
 
 }

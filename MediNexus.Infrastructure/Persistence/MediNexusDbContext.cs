@@ -1,7 +1,10 @@
-﻿using MediNexus.Domain.Administrator;
+﻿using MediNexus.Domain;
+using MediNexus.Domain.Administrator;
 using MediNexus.Domain.Insurer;
 using MediNexus.Domain.Location;
+using MediNexus.Domain.Medicines;
 using MediNexus.Domain.NavegationMenus;
+using MediNexus.Domain.Providers;
 using MediNexus.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -35,6 +38,13 @@ namespace MediNexus.Infrastructure.Persistence
         public DbSet<NavigationSubMenu> NavigationSubMenus { get; set; }
         public DbSet<RoleMenuPermission> RoleMenuPermissions { get; set; }
         public DbSet<RoleSubMenuPermission> RoleSubMenuPermissions { get; set; }
+        public DbSet<Provider> Providers => Set<Provider>();
+        public DbSet<Medicine> Medicines => Set<Medicine>();
+        public DbSet<MeasurementUnit> MeasurementUnits => Set<MeasurementUnit>();
+        public DbSet<AdministrationRoute> AdministrationRoutes => Set<AdministrationRoute>();
+        public DbSet<PharmaceuticalForm> PharmaceuticalForms => Set<PharmaceuticalForm>();
+        public DbSet<Presentation> Presentations => Set<Presentation>();
+        public DbSet<MedicineGroup> MedicineGroups => Set<MedicineGroup>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -64,6 +74,17 @@ namespace MediNexus.Infrastructure.Persistence
                 b.Property(u => u.Email)
                     .IsRequired()
                     .HasMaxLength(200);
+
+                b.Property(u => u.Phone)
+                    .IsRequired()
+                    .HasMaxLength(25);
+
+                b.Property(u => u.Telephone)
+                    .IsRequired()
+                    .HasMaxLength(25);
+
+                b.Property(u => u.Signature)
+                    .HasMaxLength(1000);
 
                 b.Property(u => u.PasswordHash)
                     .IsRequired();
@@ -135,6 +156,14 @@ namespace MediNexus.Infrastructure.Persistence
             ConfigureCity(modelBuilder);
             ConfigureAdministratorType(modelBuilder);
             ConfigureInsurer(modelBuilder);
+            ConfigureNavegationMenu(modelBuilder);
+            ConfigureProviders(modelBuilder);
+            ConfigurationMedicine(modelBuilder);
+            ConfigureMeasurementUnit(modelBuilder);
+            ConfigureAdministrationRoute(modelBuilder);
+            ConfigurePharmaceuticalForm(modelBuilder);
+            ConfigurePresentation(modelBuilder);
+            ConfigureMedicineGroup(modelBuilder);
         }
 
         private static void ConfigureCountry(ModelBuilder modelBuilder)
@@ -318,11 +347,12 @@ namespace MediNexus.Infrastructure.Persistence
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(e => e.Nit)
-                .IsUnique();
+                .IsUnique()
+                .HasFilter("\"IsActive\" = true");
 
             entity.HasIndex(e => e.Code)
                 .IsUnique()
-                .HasFilter("\"Code\" IS NOT NULL");
+                .HasFilter("\"Code\" IS NOT NULL AND \"IsActive\" = true");
         }
 
         protected static void ConfigureNavegationMenu(ModelBuilder modelBuilder)
@@ -400,6 +430,268 @@ namespace MediNexus.Infrastructure.Persistence
                     .WithMany(sm => sm.RolePermissions)
                     .HasForeignKey(e => e.SubMenuId);
             });
+        }
+
+        protected static void ConfigureProviders(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Provider>(entity =>
+            {
+                entity.ToTable("Providers", "public");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Name).HasMaxLength(250).IsRequired();
+                entity.Property(x => x.IdentificationTypeId).IsRequired();
+                entity.Property(x => x.Nit).HasMaxLength(50).IsRequired();
+
+                entity.Property(x => x.VerificationDigit).HasMaxLength(5);
+                entity.Property(x => x.Address).HasMaxLength(300);
+                entity.Property(x => x.Phone).HasMaxLength(50);
+
+                entity.Property(x => x.LegalRepresentative).HasMaxLength(250);
+                entity.Property(x => x.DocumentType).HasMaxLength(50);
+                entity.Property(x => x.DocumentNumber).HasMaxLength(50);
+
+                entity.Property(x => x.DianResolution).HasMaxLength(100);
+                entity.Property(x => x.Prefix).HasMaxLength(20);
+
+                entity.Property(x => x.Email).HasMaxLength(150);
+                entity.Property(x => x.EnableCode).HasMaxLength(100);
+                entity.Property(x => x.Regimen).HasMaxLength(100);
+                entity.Property(x => x.InvoiceIssuerName).HasMaxLength(250);
+
+                // Mantener DATE en Postgres para estos campos
+                entity.Property(x => x.ResolutionFromDate).HasColumnType("date");
+                entity.Property(x => x.ResolutionToDate).HasColumnType("date");
+
+                entity.Property(x => x.ApplyTax).IsRequired();
+
+                // Índices
+                entity.HasIndex(x => x.Nit)
+                      .HasDatabaseName("IX_Providers_Nit");
+
+                entity.HasIndex(x => x.CityId)
+                      .HasDatabaseName("IX_Providers_CityId");
+
+                // Recomendado: Nit único (si tu negocio lo requiere)
+                // Si ya tienes datos duplicados, no lo actives hasta limpiar.
+                entity.HasIndex(x => x.Nit)
+                      .IsUnique()
+                      .HasDatabaseName("UX_Providers_Nit");
+            });
+        }
+        protected static void ConfigurationMedicine(ModelBuilder modelBuilder)
+        {
+            var entity = modelBuilder.Entity<Medicine>();
+
+            entity.ToTable("Medicines");
+
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Name)
+                .IsRequired()
+                .HasMaxLength(1000);
+
+            entity.Property(x => x.Cum)
+                .HasMaxLength(50);
+
+            entity.Property(x => x.Concentration)
+                .HasMaxLength(100);
+
+            entity.Property(x => x.MeasurementUnitSidamId)
+                .HasMaxLength(4);
+
+            entity.Property(x => x.AdministrationRouteCode)
+                .HasMaxLength(3);
+
+            entity.Property(x => x.PharmaceuticalFormCode)
+                .HasMaxLength(10);
+
+            entity.Property(x => x.PresentationCode)
+                .HasMaxLength(2);
+
+            entity.Property(x => x.MedicineGroupCode)
+                .HasMaxLength(2);
+
+            entity.Property(x => x.Atc)
+                .HasMaxLength(20);
+
+            entity.Property(x => x.Invima)
+                .HasMaxLength(50);
+
+            entity.Property(x => x.Price)
+                .HasColumnType("numeric(18,2)");
+
+            entity.Property(x => x.CreatedAt)
+                .HasDefaultValueSql("now()");
+
+            entity.Property(x => x.UpdatedAt)
+                .HasDefaultValueSql("now()");
+
+            // Relaciones (FKs)
+            entity.HasOne(x => x.MeasurementUnit)
+                .WithMany() // si no tienes colección inversa
+                .HasForeignKey(x => x.MeasurementUnitSidamId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.AdministrationRoute)
+                .WithMany()
+                .HasForeignKey(x => x.AdministrationRouteCode)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.PharmaceuticalForm)
+                .WithMany()
+                .HasForeignKey(x => x.PharmaceuticalFormCode)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.Presentation)
+                .WithMany()
+                .HasForeignKey(x => x.PresentationCode)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.MedicineGroup)
+                .WithMany()
+                .HasForeignKey(x => x.MedicineGroupCode)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Índices útiles
+            entity.HasIndex(x => x.Name);
+            entity.HasIndex(x => x.Cum);
+            entity.HasIndex(x => x.Atc);
+            entity.HasIndex(x => x.Invima);
+        }
+
+        private static void ConfigureAdministrationRoute(ModelBuilder modelBuilder)
+        {
+            var entity = modelBuilder.Entity<AdministrationRoute>();
+
+            entity.ToTable("AdministrationRoutes");
+
+            entity.HasKey(x => x.Code);             
+
+            entity.Property(x => x.Code)
+                .IsRequired()
+                .HasMaxLength(3);
+
+            entity.Property(x => x.Description)
+                .IsRequired()
+                .HasMaxLength(250);
+
+            entity.Property(x => x.MipresEnabled)
+                .IsRequired();
+
+            entity.Property(x => x.MipresVersion)
+                .HasColumnType("numeric(4,1)")
+                .IsRequired();
+
+            entity.Property(x => x.EffectiveDate)
+                .HasColumnType("date")
+                .IsRequired();
+        }
+
+        private static void ConfigureMeasurementUnit(ModelBuilder modelBuilder)
+        {
+            var entity = modelBuilder.Entity<MeasurementUnit>();
+
+            entity.ToTable("MeasurementUnits");
+
+            entity.HasKey(x => x.SidamId);
+
+            entity.Property(x => x.SidamId)
+                .IsRequired()
+                .HasMaxLength(4);
+
+            entity.Property(x => x.UnitCode)
+                .IsRequired()
+                .HasMaxLength(60);
+
+            entity.Property(x => x.Description)
+                .IsRequired()
+                .HasMaxLength(250);
+
+            entity.Property(x => x.MipresEnabled)
+                .IsRequired();
+
+            entity.Property(x => x.MipresVersion)
+                .HasColumnType("numeric(4,1)")
+                .IsRequired();
+
+            entity.Property(x => x.EffectiveDate)
+                .HasColumnType("date")
+                .IsRequired();
+
+            entity.HasIndex(x => x.UnitCode);
+        }
+
+        private static void ConfigurePharmaceuticalForm(ModelBuilder modelBuilder)
+        {
+            var entity = modelBuilder.Entity<PharmaceuticalForm>();
+
+            entity.ToTable("PharmaceuticalForms");
+
+            entity.HasKey(x => x.Code);
+
+            entity.Property(x => x.Code)
+                .IsRequired()
+                .HasMaxLength(10);
+
+            entity.Property(x => x.Description)
+                .IsRequired()
+                .HasMaxLength(300);
+
+            entity.Property(x => x.MipresEnabled)
+                .IsRequired();
+
+            entity.Property(x => x.MipresVersion)
+                .HasColumnType("numeric(4,1)")
+                .IsRequired();
+
+            entity.Property(x => x.EffectiveDate)
+                .HasColumnType("date")
+                .IsRequired();
+        }
+        private static void ConfigurePresentation(ModelBuilder modelBuilder)
+        {
+            var entity = modelBuilder.Entity<Presentation>();
+
+            entity.ToTable("Presentations");
+
+            entity.HasKey(x => x.Code);
+
+            entity.Property(x => x.Code)
+                .IsRequired()
+                .HasMaxLength(2);
+
+            entity.Property(x => x.Description)
+                .IsRequired()
+                .HasMaxLength(300);
+
+            entity.Property(x => x.MipresEnabled)
+                .IsRequired();
+
+            entity.Property(x => x.MipresVersion)
+                .HasColumnType("numeric(4,1)")
+                .IsRequired();
+
+            entity.Property(x => x.EffectiveDate)
+                .HasColumnType("date")
+                .IsRequired();
+        }
+
+        private static void ConfigureMedicineGroup(ModelBuilder modelBuilder)
+        {
+            var entity = modelBuilder.Entity<MedicineGroup>();
+
+            entity.ToTable("MedicineGroups");
+
+            entity.HasKey(x => x.Code);
+
+            entity.Property(x => x.Code)
+                .IsRequired()
+                .HasMaxLength(2);
+
+            entity.Property(x => x.Description)
+                .IsRequired()
+                .HasMaxLength(250);
         }
     }
 }

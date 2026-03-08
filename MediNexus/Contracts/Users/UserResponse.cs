@@ -15,6 +15,9 @@
         string? UserRoleName,
         int UserStatusId,
         string? UserStatusName,
+        string Phone,
+        string Telephone,
+        string Signature,
         bool IsActive,
         DateTime CreatedAt
     );
@@ -30,6 +33,9 @@
     int UserRoleId,
     int UserStatusId,
     string Email,
+    string Phone,
+    string Telephone,
+    string Signature,
     bool IsActive
     );
 }

@@ -35,7 +35,6 @@ namespace MediNexus.Api.Controllers.NavegationMenu
         }
 
         // Opción B: recibir userId por parámetro
-        [Authorize(Roles = "Admin")] // por seguridad solo admin debería poder usar esto
         [HttpGet("{userId:int}")]
         public async Task<ActionResult<NavigationResponse>> GetNavigation(int userId)
         {

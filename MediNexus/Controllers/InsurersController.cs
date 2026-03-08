@@ -147,11 +147,11 @@ namespace MediNexus.Api.Controllers
                 return BadRequest("Invalid administrator type.");
 
             // ===== Uniqueness validation =====
-            if (await _db.Insurers.AnyAsync(i => i.Nit == req.Nit))
+            if (await _db.Insurers.AnyAsync(i => i.Nit == req.Nit && i.IsActive))
                 return Conflict("Nit already exists.");
 
             if (!string.IsNullOrWhiteSpace(req.Code) &&
-                await _db.Insurers.AnyAsync(i => i.Code == req.Code))
+                await _db.Insurers.AnyAsync(i => i.Code == req.Code && i.IsActive))
                 return Conflict("Code already exists.");
 
             var insurer = new Domain.Insurer.Insurer
