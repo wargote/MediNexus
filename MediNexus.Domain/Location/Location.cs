@@ -47,6 +47,6 @@ namespace MediNexus.Domain.Location
 
         // Navigation
         public State State { get; set; } = null!;
-        public ICollection<Insurer.Insurer> Insurers { get; set; } = new List<Insurer.Insurer>();
+        public ICollection<Insurers.Insurer> Insurers { get; set; } = new List<Insurers.Insurer>();
     }
 }

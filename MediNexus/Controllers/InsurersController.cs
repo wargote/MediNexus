@@ -154,7 +154,7 @@ namespace MediNexus.Api.Controllers
                 await _db.Insurers.AnyAsync(i => i.Code == req.Code && i.IsActive))
                 return Conflict("Code already exists.");
 
-            var insurer = new Domain.Insurer.Insurer
+            var insurer = new Domain.Insurers.Insurer
             {
                 Name = req.Name.Trim(),
                 Nit = req.Nit.Trim(),

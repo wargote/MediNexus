@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MediNexus.Domain.Insurer
+namespace MediNexus.Domain.Insurers
 {
     public class Insurer
     {

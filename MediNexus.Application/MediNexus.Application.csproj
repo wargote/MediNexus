@@ -23,6 +23,7 @@
     <Folder Include="Features\Appointments\" />
     <Folder Include="Features\Patients\" />
     <Folder Include="Features\Users\" />
+    <Folder Include="Interfaces\" />
     <Folder Include="Validators\" />
   </ItemGroup>
 

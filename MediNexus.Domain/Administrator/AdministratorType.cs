@@ -16,6 +16,6 @@ namespace MediNexus.Domain.Administrator
         public DateTime? UpdatedAt { get; set; }
 
         // Navigation
-        public ICollection<Insurer.Insurer> Insurers { get; set; } = new List<Insurer.Insurer>();
+        public ICollection<Insurers.Insurer> Insurers { get; set; } = new List<Insurers.Insurer>();
     }
 }
