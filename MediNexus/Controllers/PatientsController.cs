@@ -29,7 +29,6 @@ namespace MediNexus.Api.Controllers
                 .AsNoTracking()
                 .Where(p => p.IsActive)
                 .Include(p => p.Insurer)
-                .Include(p => p.Contract)
                 .Include(p => p.DocumentType)
                 .Include(p => p.BirthCountry)
                 .Include(p => p.ResidenceCountry)
@@ -61,8 +60,6 @@ namespace MediNexus.Api.Controllers
                     Id = p.Id,
                     InsurerId = p.InsurerId,
                     InsurerName = p.Insurer.Name,
-                    ContractId = p.ContractId,
-                    ContractName = p.Contract != null ? p.Contract.ContractName : null,
                     DocumentTypeId = p.DocumentTypeId,
                     DocumentTypeCode = p.DocumentType.Code,
                     DocumentTypeName = p.DocumentType.Name,
@@ -110,7 +107,6 @@ namespace MediNexus.Api.Controllers
                 .AsNoTracking()
                 .Where(p => p.Id == id)
                 .Include(p => p.Insurer)
-                .Include(p => p.Contract)
                 .Include(p => p.DocumentType)
                 .Include(p => p.BirthCountry)
                 .Include(p => p.ResidenceCountry)
@@ -127,8 +123,6 @@ namespace MediNexus.Api.Controllers
                     Id = p.Id,
                     InsurerId = p.InsurerId,
                     InsurerName = p.Insurer.Name,
-                    ContractId = p.ContractId,
-                    ContractName = p.Contract != null ? p.Contract.ContractName : null,
                     DocumentTypeId = p.DocumentTypeId,
                     DocumentTypeCode = p.DocumentType.Code,
                     DocumentTypeName = p.DocumentType.Name,
@@ -205,21 +199,18 @@ namespace MediNexus.Api.Controllers
             if (!await _db.Insurers.AnyAsync(i => i.Id == req.InsurerId && i.IsActive))
                 return BadRequest("Invalid insurer.");
 
-            if (req.ContractId.HasValue && !await _db.Contracts.AnyAsync(c => c.Id == req.ContractId.Value && c.IsActive))
-                return BadRequest("Invalid contract.");
-
             if (!await _db.DocumentTypes.AnyAsync(d => d.Id == req.DocumentTypeId && d.IsActive))
                 return BadRequest("Invalid document type.");
 
             if (!await _db.Countries.AnyAsync(c => c.Id == req.BirthCountryId && c.IsActive))
                 return BadRequest("Invalid birth country.");
-                
+
             if (!await _db.Countries.AnyAsync(c => c.Id == req.ResidenceCountryId && c.IsActive))
                 return BadRequest("Invalid residence country.");
-                
+
             if (!await _db.States.AnyAsync(s => s.Id == req.StateId && s.IsActive))
                 return BadRequest("Invalid state.");
-                
+
             if (!await _db.Cities.AnyAsync(c => c.Id == req.CityId && c.StateId == req.StateId && c.IsActive))
                 return BadRequest("Invalid city for the selected state.");
 
@@ -249,7 +240,6 @@ namespace MediNexus.Api.Controllers
             var patient = new Patient
             {
                 InsurerId = req.InsurerId,
-                ContractId = req.ContractId,
                 DocumentTypeId = req.DocumentTypeId,
                 DocumentNumber = documentNumber,
                 FirstName = req.FirstName.Trim(),
@@ -297,21 +287,18 @@ namespace MediNexus.Api.Controllers
             if (!await _db.Insurers.AnyAsync(i => i.Id == req.InsurerId && i.IsActive))
                 return BadRequest("Invalid insurer.");
 
-            if (req.ContractId.HasValue && !await _db.Contracts.AnyAsync(c => c.Id == req.ContractId.Value && c.IsActive))
-                return BadRequest("Invalid contract.");
-
             if (!await _db.DocumentTypes.AnyAsync(d => d.Id == req.DocumentTypeId && d.IsActive))
                 return BadRequest("Invalid document type.");
 
             if (!await _db.Countries.AnyAsync(c => c.Id == req.BirthCountryId && c.IsActive))
                 return BadRequest("Invalid birth country.");
-                
+
             if (!await _db.Countries.AnyAsync(c => c.Id == req.ResidenceCountryId && c.IsActive))
                 return BadRequest("Invalid residence country.");
-                
+
             if (!await _db.States.AnyAsync(s => s.Id == req.StateId && s.IsActive))
                 return BadRequest("Invalid state.");
-                
+
             if (!await _db.Cities.AnyAsync(c => c.Id == req.CityId && c.StateId == req.StateId && c.IsActive))
                 return BadRequest("Invalid city for the selected state.");
 
@@ -339,7 +326,6 @@ namespace MediNexus.Api.Controllers
                 return Conflict("A patient with this document type and number already exists.");
 
             patient.InsurerId = req.InsurerId;
-            patient.ContractId = req.ContractId;
             patient.DocumentTypeId = req.DocumentTypeId;
             patient.DocumentNumber = documentNumber;
             patient.FirstName = req.FirstName.Trim();
