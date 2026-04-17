@@ -7,9 +7,7 @@ namespace MediNexus.Api.Contracts.Patient
     {
         [Required]
         public int InsurerId { get; set; }
-        
-        public int? ContractId { get; set; }
-        
+
         [Required]
         public int DocumentTypeId { get; set; }
         

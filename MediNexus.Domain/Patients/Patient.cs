@@ -1,5 +1,4 @@
 using MediNexus.Domain.Administrator;
-using MediNexus.Domain.Contracts;
 using MediNexus.Domain.Insurers;
 using MediNexus.Domain.Location;
 using MediNexus.Domain.Users;
@@ -11,7 +10,6 @@ namespace MediNexus.Domain.Patients
     {
         public int Id { get; set; }
         public int InsurerId { get; set; }
-        public int? ContractId { get; set; }
         public int DocumentTypeId { get; set; }
         public string DocumentNumber { get; set; } = null!;
         public string FirstName { get; set; } = null!;
@@ -38,7 +36,6 @@ namespace MediNexus.Domain.Patients
 
         // Navigation
         public Insurer Insurer { get; set; } = null!;
-        public Contract? Contract { get; set; }
         public DocumentType DocumentType { get; set; } = null!;
         public Country BirthCountry { get; set; } = null!;
         public Country ResidenceCountry { get; set; } = null!;

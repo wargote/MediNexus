@@ -3,6 +3,7 @@ using System;
 using MediNexus.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MediNexus.Infrastructure.Migrations
 {
     [DbContext(typeof(MediNexusDbContext))]
-    partial class MediNexusDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260415185143_Patient_RemoveContractRelation")]
+    partial class Patient_RemoveContractRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1275,45 +1278,6 @@ namespace MediNexus.Infrastructure.Migrations
                     b.ToTable("Providers", "public");
                 });
 
-            modelBuilder.Entity("MediNexus.Domain.Tariffs.Tariff", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<int>("ValueMethodId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ValueMethodId")
-                        .HasDatabaseName("IX_Tariffs_ValueMethodId");
-
-                    b.ToTable("Tariffs", (string)null);
-                });
-
             modelBuilder.Entity("MediNexus.Domain.Triages.Triage", b =>
                 {
                     b.Property<int>("Id")
@@ -1885,17 +1849,6 @@ namespace MediNexus.Infrastructure.Migrations
                     b.Navigation("State");
 
                     b.Navigation("Zone");
-                });
-
-            modelBuilder.Entity("MediNexus.Domain.Tariffs.Tariff", b =>
-                {
-                    b.HasOne("MediNexus.Domain.ParametersContracts.ValueMethod", "ValueMethod")
-                        .WithMany()
-                        .HasForeignKey("ValueMethodId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ValueMethod");
                 });
 
             modelBuilder.Entity("MediNexus.Domain.Triages.Triage", b =>

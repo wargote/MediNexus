@@ -7,10 +7,7 @@ namespace MediNexus.Api.Contracts.Patient
         public int Id { get; set; }
         public int InsurerId { get; set; }
         public string InsurerName { get; set; } = null!;
-        
-        public int? ContractId { get; set; }
-        public string? ContractName { get; set; } 
-        
+
         public int DocumentTypeId { get; set; }
         public string DocumentTypeCode { get; set; } = null!;
         public string DocumentTypeName { get; set; } = null!;

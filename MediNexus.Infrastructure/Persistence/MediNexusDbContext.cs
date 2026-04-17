@@ -8,6 +8,7 @@ using MediNexus.Domain.NavegationMenus;
 using MediNexus.Domain.ParametersContracts;
 using MediNexus.Domain.Providers;
 using MediNexus.Domain.Patients;
+using MediNexus.Domain.Tariffs;
 using MediNexus.Domain.Triages;
 using MediNexus.Domain.Users;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +56,7 @@ namespace MediNexus.Infrastructure.Persistence
         public DbSet<BloodGroup> BloodGroups { get; set; } = null!;
         public DbSet<RhFactor> RhFactors { get; set; } = null!;
         public DbSet<MaritalStatus> MaritalStatuses { get; set; } = null!;
+        public DbSet<Tariff> Tariffs => Set<Tariff>();
 
         //Medicines
         public DbSet<Medicine> Medicines => Set<Medicine>();
@@ -199,6 +201,7 @@ namespace MediNexus.Infrastructure.Persistence
             ConfigureBloodGroup(modelBuilder);
             ConfigureRhFactor(modelBuilder);
             ConfigureMaritalStatus(modelBuilder);
+            ConfigureTariff(modelBuilder);
             ConfigurePatient(modelBuilder);
             ConfigureTriage(modelBuilder);
 
@@ -963,11 +966,6 @@ namespace MediNexus.Infrastructure.Persistence
                 .HasForeignKey(x => x.InsurerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(x => x.Contract)
-                .WithMany()
-                .HasForeignKey(x => x.ContractId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             entity.HasOne(x => x.DocumentType)
                 .WithMany()
                 .HasForeignKey(x => x.DocumentTypeId)
@@ -1029,9 +1027,6 @@ namespace MediNexus.Infrastructure.Persistence
 
             entity.HasIndex(x => x.InsurerId)
                 .HasDatabaseName("IX_Patients_InsurerId");
-
-            entity.HasIndex(x => x.ContractId)
-                .HasDatabaseName("IX_Patients_ContractId");
 
             entity.HasIndex(x => x.BirthCountryId)
                 .HasDatabaseName("IX_Patients_BirthCountryId");
@@ -1122,6 +1117,39 @@ namespace MediNexus.Infrastructure.Persistence
             entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.HasIndex(e => e.Name).IsUnique();
+        }
+
+        private static void ConfigureTariff(ModelBuilder modelBuilder)
+        {
+            var entity = modelBuilder.Entity<Tariff>();
+
+            entity.ToTable("Tariffs");
+
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(x => x.IsActive)
+                .IsRequired()
+                .HasDefaultValue(true);
+
+            entity.Property(x => x.CreatedAt)
+                .IsRequired()
+                .HasDefaultValueSql("now()");
+
+            entity.Property(x => x.UpdatedAt)
+                .IsRequired()
+                .HasDefaultValueSql("now()");
+
+            entity.HasOne(x => x.ValueMethod)
+                .WithMany()
+                .HasForeignKey(x => x.ValueMethodId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(x => x.ValueMethodId)
+                .HasDatabaseName("IX_Tariffs_ValueMethodId");
         }
 
         private static void ConfigureTriage(ModelBuilder modelBuilder)
