@@ -1,5 +1,6 @@
 using MediNexus.Domain;
 using MediNexus.Domain.Administrator;
+using MediNexus.Domain.Admissions.ParametersAdmission;
 using MediNexus.Domain.Contracts;
 using MediNexus.Domain.Insurers;
 using MediNexus.Domain.Location;
@@ -75,6 +76,15 @@ namespace MediNexus.Infrastructure.Persistence
         public DbSet<Coverage> Coverages => Set<Coverage>();
         public DbSet<ContractStatus> ContractStatuses => Set<ContractStatus>();
         public DbSet<Contract> Contracts => Set<Contract>();
+
+        //Admissions - Parameters
+        public DbSet<CareModality> CareModalities => Set<CareModality>();
+        public DbSet<CareScope> CareScopes => Set<CareScope>();
+        public DbSet<CareReason> CareReasons => Set<CareReason>();
+        public DbSet<AdmissionType> AdmissionTypes => Set<AdmissionType>();
+        public DbSet<CarePurpose> CarePurposes => Set<CarePurpose>();
+        public DbSet<ServiceClassification> ServiceClassifications => Set<ServiceClassification>();
+        public DbSet<ServiceGroup> ServiceGroups => Set<ServiceGroup>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -213,6 +223,96 @@ namespace MediNexus.Infrastructure.Persistence
             ConfigureCoverage(modelBuilder);
             ConfigureContractStatus(modelBuilder);
             ConfigureContract(modelBuilder);
+
+            ConfigureAdmissionParameters(modelBuilder);
+        }
+
+        private static void ConfigureAdmissionParameters(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CareModality>(entity =>
+            {
+                entity.ToTable("CareModalities");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Name).IsRequired().HasMaxLength(150);
+                entity.Property(x => x.IsActive).IsRequired().HasDefaultValue(true);
+                entity.Property(x => x.CreatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.Property(x => x.UpdatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.HasIndex(x => x.Name).IsUnique();
+            });
+
+            modelBuilder.Entity<CareScope>(entity =>
+            {
+                entity.ToTable("CareScopes");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Name).IsRequired().HasMaxLength(150);
+                entity.Property(x => x.IsActive).IsRequired().HasDefaultValue(true);
+                entity.Property(x => x.CreatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.Property(x => x.UpdatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.HasIndex(x => x.Name).IsUnique();
+            });
+
+            modelBuilder.Entity<CareReason>(entity =>
+            {
+                entity.ToTable("CareReasons");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Name).IsRequired().HasMaxLength(150);
+                entity.Property(x => x.IsActive).IsRequired().HasDefaultValue(true);
+                entity.Property(x => x.CreatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.Property(x => x.UpdatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.HasIndex(x => x.Name).IsUnique();
+            });
+
+            modelBuilder.Entity<AdmissionType>(entity =>
+            {
+                entity.ToTable("AdmissionTypes");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Name).IsRequired().HasMaxLength(150);
+                entity.Property(x => x.IsActive).IsRequired().HasDefaultValue(true);
+                entity.Property(x => x.CreatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.Property(x => x.UpdatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.HasIndex(x => x.Name).IsUnique();
+            });
+
+            modelBuilder.Entity<CarePurpose>(entity =>
+            {
+                entity.ToTable("CarePurposes");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Name).IsRequired().HasMaxLength(150);
+                entity.Property(x => x.IsActive).IsRequired().HasDefaultValue(true);
+                entity.Property(x => x.CreatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.Property(x => x.UpdatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.HasIndex(x => x.Name).IsUnique();
+            });
+
+            modelBuilder.Entity<ServiceClassification>(entity =>
+            {
+                entity.ToTable("ServiceClassifications");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Name).IsRequired().HasMaxLength(150);
+                entity.Property(x => x.IsActive).IsRequired().HasDefaultValue(true);
+                entity.Property(x => x.CreatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.Property(x => x.UpdatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.HasIndex(x => x.Name).IsUnique();
+            });
+
+            modelBuilder.Entity<ServiceGroup>(entity =>
+            {
+                entity.ToTable("ServiceGroups");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Name).IsRequired().HasMaxLength(150);
+                entity.Property(x => x.IsActive).IsRequired().HasDefaultValue(true);
+                entity.Property(x => x.CreatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.Property(x => x.UpdatedAt).IsRequired().HasDefaultValueSql("now()");
+
+                entity.HasOne(x => x.ServiceClassification)
+                    .WithMany(c => c.ServiceGroups)
+                    .HasForeignKey(x => x.ServiceClassificationId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(x => new { x.ServiceClassificationId, x.Name }).IsUnique();
+                entity.HasIndex(x => x.ServiceClassificationId)
+                    .HasDatabaseName("IX_ServiceGroups_ServiceClassificationId");
+            });
         }
 
         private static void ConfigureCountry(ModelBuilder modelBuilder)

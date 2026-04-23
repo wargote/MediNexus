@@ -3,6 +3,7 @@ using System;
 using MediNexus.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MediNexus.Infrastructure.Migrations
 {
     [DbContext(typeof(MediNexusDbContext))]
-    partial class MediNexusDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260423045232_Admission_AddCarePurposes")]
+    partial class Admission_AddCarePurposes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -242,84 +245,6 @@ namespace MediNexus.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("CareScopes", (string)null);
-                });
-
-            modelBuilder.Entity("MediNexus.Domain.Admissions.ParametersAdmission.ServiceClassification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("ServiceClassifications", (string)null);
-                });
-
-            modelBuilder.Entity("MediNexus.Domain.Admissions.ParametersAdmission.ServiceGroup", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
-
-                    b.Property<int>("ServiceClassificationId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ServiceClassificationId")
-                        .HasDatabaseName("IX_ServiceGroups_ServiceClassificationId");
-
-                    b.HasIndex("ServiceClassificationId", "Name")
-                        .IsUnique();
-
-                    b.ToTable("ServiceGroups", (string)null);
                 });
 
             modelBuilder.Entity("MediNexus.Domain.Contracts.Contract", b =>
@@ -1848,17 +1773,6 @@ namespace MediNexus.Infrastructure.Migrations
                     b.ToTable("UserStatuses");
                 });
 
-            modelBuilder.Entity("MediNexus.Domain.Admissions.ParametersAdmission.ServiceGroup", b =>
-                {
-                    b.HasOne("MediNexus.Domain.Admissions.ParametersAdmission.ServiceClassification", "ServiceClassification")
-                        .WithMany("ServiceGroups")
-                        .HasForeignKey("ServiceClassificationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ServiceClassification");
-                });
-
             modelBuilder.Entity("MediNexus.Domain.Contracts.Contract", b =>
                 {
                     b.HasOne("MediNexus.Domain.ParametersContracts.BenefitPlanContractType", "BenefitPlanContractType")
@@ -2227,11 +2141,6 @@ namespace MediNexus.Infrastructure.Migrations
             modelBuilder.Entity("MediNexus.Domain.Administrator.AdministratorType", b =>
                 {
                     b.Navigation("Insurers");
-                });
-
-            modelBuilder.Entity("MediNexus.Domain.Admissions.ParametersAdmission.ServiceClassification", b =>
-                {
-                    b.Navigation("ServiceGroups");
                 });
 
             modelBuilder.Entity("MediNexus.Domain.Contracts.ContractStatus", b =>
