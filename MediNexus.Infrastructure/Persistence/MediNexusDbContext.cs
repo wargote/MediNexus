@@ -1,5 +1,6 @@
 using MediNexus.Domain;
 using MediNexus.Domain.Administrator;
+using MediNexus.Domain.Admissions;
 using MediNexus.Domain.Admissions.ParametersAdmission;
 using MediNexus.Domain.Contracts;
 using MediNexus.Domain.Insurers;
@@ -85,6 +86,9 @@ namespace MediNexus.Infrastructure.Persistence
         public DbSet<CarePurpose> CarePurposes => Set<CarePurpose>();
         public DbSet<ServiceClassification> ServiceClassifications => Set<ServiceClassification>();
         public DbSet<ServiceGroup> ServiceGroups => Set<ServiceGroup>();
+
+        //Admissions
+        public DbSet<Admission> Admissions => Set<Admission>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -225,6 +229,7 @@ namespace MediNexus.Infrastructure.Persistence
             ConfigureContract(modelBuilder);
 
             ConfigureAdmissionParameters(modelBuilder);
+            ConfigureAdmission(modelBuilder);
         }
 
         private static void ConfigureAdmissionParameters(ModelBuilder modelBuilder)
@@ -1293,6 +1298,92 @@ namespace MediNexus.Infrastructure.Persistence
 
             entity.HasIndex(x => x.PatientId)
                 .HasDatabaseName("IX_Triages_PatientId");
+        }
+
+        private static void ConfigureAdmission(ModelBuilder modelBuilder)
+        {
+            var entity = modelBuilder.Entity<Admission>();
+
+            entity.ToTable("Admissions");
+
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.ModalidadAtencion)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(x => x.MotivoAtencion)
+                .IsRequired()
+                .HasMaxLength(500);
+
+            entity.Property(x => x.ClasificacionServicio)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(x => x.GrupoServicio)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(x => x.Ingreso)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(x => x.AmbitoAtencion)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(x => x.FinalidadAtencion)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(x => x.IsActive)
+                .IsRequired()
+                .HasDefaultValue(true);
+
+            entity.Property(x => x.CreatedAt)
+                .IsRequired()
+                .HasDefaultValueSql("now()");
+
+            entity.Property(x => x.UpdatedAt)
+                .IsRequired()
+                .HasDefaultValueSql("now()");
+
+            // Relación con Patient
+            entity.HasOne(x => x.Patient)
+                .WithMany()
+                .HasForeignKey(x => x.PatientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Relación con Triage
+            entity.HasOne(x => x.Triage)
+                .WithMany()
+                .HasForeignKey(x => x.TriageId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Relación con Insurer (EPS)
+            entity.HasOne(x => x.Insurer)
+                .WithMany()
+                .HasForeignKey(x => x.InsurerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Relación con Contract (Convenio)
+            entity.HasOne(x => x.Convenio)
+                .WithMany()
+                .HasForeignKey(x => x.ConvenioId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Índices
+            entity.HasIndex(x => x.PatientId)
+                .HasDatabaseName("IX_Admissions_PatientId");
+
+            entity.HasIndex(x => x.TriageId)
+                .HasDatabaseName("IX_Admissions_TriageId");
+
+            entity.HasIndex(x => x.InsurerId)
+                .HasDatabaseName("IX_Admissions_InsurerId");
+
+            entity.HasIndex(x => x.ConvenioId)
+                .HasDatabaseName("IX_Admissions_ConvenioId");
         }
     }
 }

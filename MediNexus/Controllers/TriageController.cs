@@ -106,6 +106,13 @@ namespace MediNexus.Api.Controllers
             if (patient is null)
                 return NotFound("Patient not found or inactive.");
 
+            // Validar que el paciente no tenga un triage activo
+            var hasActiveTriage = await _db.Triages
+                .AnyAsync(t => t.PatientId == patient.Id && t.IsActive);
+
+            if (hasActiveTriage)
+                return Conflict(new { message = "El paciente ya cuenta con un triage activo." });
+
             var triage = new Triage
             {
                 PatientId = patient.Id,
@@ -154,6 +161,16 @@ namespace MediNexus.Api.Controllers
 
             if (triage is null)
                 return NotFound("Triage not found.");
+
+            // Si se intenta activar, validar que no exista otro triage activo para el paciente
+            if (req.IsActive && !triage.IsActive)
+            {
+                var hasOtherActiveTriage = await _db.Triages
+                    .AnyAsync(t => t.PatientId == triage.PatientId && t.Id != triage.Id && t.IsActive);
+
+                if (hasOtherActiveTriage)
+                    return Conflict(new { message = "El paciente ya cuenta con un triage activo." });
+            }
 
             triage.TriageDateTime = req.FechaHora;
             triage.Priority = req.Prioridad;
