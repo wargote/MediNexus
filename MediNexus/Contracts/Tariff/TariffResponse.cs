@@ -8,6 +8,8 @@ namespace MediNexus.Api.Contracts.Tariff
         public string Name { get; set; } = null!;
         public int ValueMethodId { get; set; }
         public string? ValueMethodDescription { get; set; }
+        public int ContractId { get; set; }
+        public string? ContractName { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

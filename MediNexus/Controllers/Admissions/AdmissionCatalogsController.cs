@@ -24,7 +24,7 @@ namespace MediNexus.Api.Controllers.Admissions
         {
             var response = new AdmissionCatalogsResponseDto
             {
-                CareModalities = await _context.CareModalities
+                CareModalities = await _context.CareModalities // modalidad de atencion
                     .AsNoTracking()
                     .Where(x => x.IsActive)
                     .OrderBy(x => x.Name)
@@ -36,7 +36,7 @@ namespace MediNexus.Api.Controllers.Admissions
                     })
                     .ToListAsync(),
 
-                CareScopes = await _context.CareScopes
+                CareScopes = await _context.CareScopes // ambito de la atencion
                     .AsNoTracking()
                     .Where(x => x.IsActive)
                     .OrderBy(x => x.Name)
@@ -48,7 +48,7 @@ namespace MediNexus.Api.Controllers.Admissions
                     })
                     .ToListAsync(),
 
-                CareReasons = await _context.CareReasons
+                CareReasons = await _context.CareReasons // Motivo de atencion
                     .AsNoTracking()
                     .Where(x => x.IsActive)
                     .OrderBy(x => x.Name)
@@ -60,7 +60,7 @@ namespace MediNexus.Api.Controllers.Admissions
                     })
                     .ToListAsync(),
 
-                AdmissionTypes = await _context.AdmissionTypes
+                AdmissionTypes = await _context.AdmissionTypes // ingreso
                     .AsNoTracking()
                     .Where(x => x.IsActive)
                     .OrderBy(x => x.Name)
@@ -72,7 +72,7 @@ namespace MediNexus.Api.Controllers.Admissions
                     })
                     .ToListAsync(),
 
-                CarePurposes = await _context.CarePurposes
+                CarePurposes = await _context.CarePurposes // finalidad de la atencion
                     .AsNoTracking()
                     .Where(x => x.IsActive)
                     .OrderBy(x => x.Name)
@@ -84,7 +84,7 @@ namespace MediNexus.Api.Controllers.Admissions
                     })
                     .ToListAsync(),
 
-                ServiceClassifications = await _context.ServiceClassifications
+                ServiceClassifications = await _context.ServiceClassifications // clasificacion de servicio
                     .AsNoTracking()
                     .Where(x => x.IsActive)
                     .OrderBy(x => x.Name)
@@ -96,7 +96,7 @@ namespace MediNexus.Api.Controllers.Admissions
                     })
                     .ToListAsync(),
 
-                ServiceGroups = await _context.ServiceGroups
+                ServiceGroups = await _context.ServiceGroups // grupo de servicio
                     .AsNoTracking()
                     .Where(x => x.IsActive)
                     .OrderBy(x => x.ServiceClassification.Name).ThenBy(x => x.Name)

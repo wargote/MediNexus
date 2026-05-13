@@ -4,26 +4,26 @@ namespace MediNexus.Api.Contracts.Admissions
 {
     public class AdmissionUpdateRequest
     {
-        [Required(ErrorMessage = "La modalidad de atención es obligatoria.")]
-        public string ModalidadAtencion { get; set; } = null!;
+        [Required(ErrorMessage = "El ID de la modalidad de atención es obligatorio.")]
+        public int CareModalityId { get; set; }
 
-        [Required(ErrorMessage = "El motivo de atención es obligatorio.")]
-        public string MotivoAtencion { get; set; } = null!;
+        [Required(ErrorMessage = "El ID del motivo de atención es obligatorio.")]
+        public int CareReasonId { get; set; }
 
-        [Required(ErrorMessage = "La clasificación de servicio es obligatoria.")]
-        public string ClasificacionServicio { get; set; } = null!;
+        [Required(ErrorMessage = "El ID de la clasificación de servicio es obligatoria.")]
+        public int ServiceClassificationId { get; set; }
 
-        [Required(ErrorMessage = "El grupo de servicio es obligatorio.")]
-        public string GrupoServicio { get; set; } = null!;
+        [Required(ErrorMessage = "El ID del grupo de servicio es obligatorio.")]
+        public int ServiceGroupId { get; set; }
 
-        [Required(ErrorMessage = "El tipo de ingreso es obligatorio.")]
-        public string Ingreso { get; set; } = null!;
+        [Required(ErrorMessage = "El ID del tipo de ingreso es obligatorio.")]
+        public int AdmissionTypeId { get; set; }
 
-        [Required(ErrorMessage = "El ámbito de atención es obligatorio.")]
-        public string AmbitoAtencion { get; set; } = null!;
+        [Required(ErrorMessage = "El ID del ámbito de atención es obligatorio.")]
+        public int CareScopeId { get; set; }
 
-        [Required(ErrorMessage = "La finalidad de atención es obligatoria.")]
-        public string FinalidadAtencion { get; set; } = null!;
+        [Required(ErrorMessage = "El ID de la finalidad de atención es obligatoria.")]
+        public int CarePurposeId { get; set; }
 
         [Required(ErrorMessage = "El ID de la EPS es obligatorio.")]
         public int EpsId { get; set; }

@@ -59,6 +59,8 @@ namespace MediNexus.Infrastructure.Persistence
         public DbSet<RhFactor> RhFactors { get; set; } = null!;
         public DbSet<MaritalStatus> MaritalStatuses { get; set; } = null!;
         public DbSet<Tariff> Tariffs => Set<Tariff>();
+        public DbSet<SurgicalGroup> SurgicalGroups => Set<SurgicalGroup>();
+        public DbSet<TariffDetail> TariffDetails => Set<TariffDetail>();
 
         //Medicines
         public DbSet<Medicine> Medicines => Set<Medicine>();
@@ -216,6 +218,8 @@ namespace MediNexus.Infrastructure.Persistence
             ConfigureRhFactor(modelBuilder);
             ConfigureMaritalStatus(modelBuilder);
             ConfigureTariff(modelBuilder);
+            ConfigureSurgicalGroup(modelBuilder);
+            ConfigureTariffDetail(modelBuilder);
             ConfigurePatient(modelBuilder);
             ConfigureTriage(modelBuilder);
 
@@ -1253,8 +1257,16 @@ namespace MediNexus.Infrastructure.Persistence
                 .HasForeignKey(x => x.ValueMethodId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            entity.HasOne(x => x.Contract)
+                .WithMany()
+                .HasForeignKey(x => x.ContractId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             entity.HasIndex(x => x.ValueMethodId)
                 .HasDatabaseName("IX_Tariffs_ValueMethodId");
+
+            entity.HasIndex(x => x.ContractId)
+                .HasDatabaseName("IX_Tariffs_ContractId");
         }
 
         private static void ConfigureTriage(ModelBuilder modelBuilder)
@@ -1308,33 +1320,41 @@ namespace MediNexus.Infrastructure.Persistence
 
             entity.HasKey(x => x.Id);
 
-            entity.Property(x => x.ModalidadAtencion)
-                .IsRequired()
-                .HasMaxLength(200);
+            // Relaciones de Catálogos
+            entity.HasOne(x => x.CareModality)
+                .WithMany()
+                .HasForeignKey(x => x.CareModalityId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            entity.Property(x => x.MotivoAtencion)
-                .IsRequired()
-                .HasMaxLength(500);
+            entity.HasOne(x => x.CareReason)
+                .WithMany()
+                .HasForeignKey(x => x.CareReasonId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            entity.Property(x => x.ClasificacionServicio)
-                .IsRequired()
-                .HasMaxLength(200);
+            entity.HasOne(x => x.ServiceClassification)
+                .WithMany()
+                .HasForeignKey(x => x.ServiceClassificationId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            entity.Property(x => x.GrupoServicio)
-                .IsRequired()
-                .HasMaxLength(200);
+            entity.HasOne(x => x.ServiceGroup)
+                .WithMany()
+                .HasForeignKey(x => x.ServiceGroupId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            entity.Property(x => x.Ingreso)
-                .IsRequired()
-                .HasMaxLength(200);
+            entity.HasOne(x => x.AdmissionType)
+                .WithMany()
+                .HasForeignKey(x => x.AdmissionTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            entity.Property(x => x.AmbitoAtencion)
-                .IsRequired()
-                .HasMaxLength(200);
+            entity.HasOne(x => x.CareScope)
+                .WithMany()
+                .HasForeignKey(x => x.CareScopeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            entity.Property(x => x.FinalidadAtencion)
-                .IsRequired()
-                .HasMaxLength(200);
+            entity.HasOne(x => x.CarePurpose)
+                .WithMany()
+                .HasForeignKey(x => x.CarePurposeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(x => x.IsActive)
                 .IsRequired()
@@ -1384,6 +1404,69 @@ namespace MediNexus.Infrastructure.Persistence
 
             entity.HasIndex(x => x.ConvenioId)
                 .HasDatabaseName("IX_Admissions_ConvenioId");
+
+            entity.HasIndex(x => x.CareModalityId)
+                .HasDatabaseName("IX_Admissions_CareModalityId");
+
+            entity.HasIndex(x => x.CareReasonId)
+                .HasDatabaseName("IX_Admissions_CareReasonId");
+
+            entity.HasIndex(x => x.ServiceClassificationId)
+                .HasDatabaseName("IX_Admissions_ServiceClassificationId");
+
+            entity.HasIndex(x => x.ServiceGroupId)
+                .HasDatabaseName("IX_Admissions_ServiceGroupId");
+
+            entity.HasIndex(x => x.AdmissionTypeId)
+                .HasDatabaseName("IX_Admissions_AdmissionTypeId");
+
+            entity.HasIndex(x => x.CareScopeId)
+                .HasDatabaseName("IX_Admissions_CareScopeId");
+
+            entity.HasIndex(x => x.CarePurposeId)
+                .HasDatabaseName("IX_Admissions_CarePurposeId");
+        }
+
+        private static void ConfigureSurgicalGroup(ModelBuilder modelBuilder)
+        {
+            var entity = modelBuilder.Entity<SurgicalGroup>();
+            entity.ToTable("SurgicalGroups");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.ReferenceCode)
+                .IsRequired()
+                .HasMaxLength(100);
+        }
+
+        private static void ConfigureTariffDetail(ModelBuilder modelBuilder)
+        {
+            var entity = modelBuilder.Entity<TariffDetail>();
+            entity.ToTable("TariffDetails");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Description)
+                .IsRequired()
+                .HasMaxLength(500);
+            entity.Property(x => x.Value)
+                .IsRequired()
+                .HasColumnType("numeric(18,2)");
+            entity.Property(x => x.Factors)
+                .IsRequired()
+                .HasColumnType("numeric(18,4)");
+
+            entity.HasOne(x => x.Tariff)
+                .WithMany()
+                .HasForeignKey(x => x.TariffId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.SurgicalGroup)
+                .WithMany()
+                .HasForeignKey(x => x.SurgicalGroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(x => x.TariffId)
+                .HasDatabaseName("IX_TariffDetails_TariffId");
+
+            entity.HasIndex(x => x.SurgicalGroupId)
+                .HasDatabaseName("IX_TariffDetails_SurgicalGroupId");
         }
     }
 }

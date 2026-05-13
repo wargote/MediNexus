@@ -79,6 +79,35 @@ namespace MediNexus.Api.Controllers.Admissions
             if (contract.InsurerId != request.EpsId)
                 return BadRequest(new { message = "El convenio no pertenece a la EPS especificada. La aseguradora debe estar asociada al contrato." });
 
+            // 6.5 Validar catalogos y obtener nombres
+            var careModality = await _db.CareModalities.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.CareModalityId && x.IsActive);
+            if (careModality is null)
+                return BadRequest(new { message = "La modalidad de atención especificada no existe o está inactiva." });
+
+            var careReason = await _db.CareReasons.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.CareReasonId && x.IsActive);
+            if (careReason is null)
+                return BadRequest(new { message = "El motivo de atención especificado no existe o está inactivo." });
+
+            var serviceClassification = await _db.ServiceClassifications.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.ServiceClassificationId && x.IsActive);
+            if (serviceClassification is null)
+                return BadRequest(new { message = "La clasificación de servicio especificada no existe o está inactiva." });
+
+            var serviceGroup = await _db.ServiceGroups.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.ServiceGroupId && x.IsActive);
+            if (serviceGroup is null)
+                return BadRequest(new { message = "El grupo de servicio especificado no existe o está inactivo." });
+
+            var admissionType = await _db.AdmissionTypes.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.AdmissionTypeId && x.IsActive);
+            if (admissionType is null)
+                return BadRequest(new { message = "El tipo de ingreso especificado no existe o está inactivo." });
+
+            var careScope = await _db.CareScopes.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.CareScopeId && x.IsActive);
+            if (careScope is null)
+                return BadRequest(new { message = "El ámbito de atención especificado no existe o está inactivo." });
+
+            var carePurpose = await _db.CarePurposes.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.CarePurposeId && x.IsActive);
+            if (carePurpose is null)
+                return BadRequest(new { message = "La finalidad de atención especificada no existe o está inactiva." });
+
             // 7. Crear la admisión
             var admission = new Admission
             {
@@ -86,13 +115,13 @@ namespace MediNexus.Api.Controllers.Admissions
                 TriageId = latestTriage.Id,
                 InsurerId = request.EpsId,
                 ConvenioId = request.ConvenioId,
-                ModalidadAtencion = request.ModalidadAtencion,
-                MotivoAtencion = request.MotivoAtencion,
-                ClasificacionServicio = request.ClasificacionServicio,
-                GrupoServicio = request.GrupoServicio,
-                Ingreso = request.Ingreso,
-                AmbitoAtencion = request.AmbitoAtencion,
-                FinalidadAtencion = request.FinalidadAtencion,
+                CareModalityId = request.CareModalityId,
+                CareReasonId = request.CareReasonId,
+                ServiceClassificationId = request.ServiceClassificationId,
+                ServiceGroupId = request.ServiceGroupId,
+                AdmissionTypeId = request.AdmissionTypeId,
+                CareScopeId = request.CareScopeId,
+                CarePurposeId = request.CarePurposeId,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
@@ -110,13 +139,20 @@ namespace MediNexus.Api.Controllers.Admissions
                 TriageId = latestTriage.Id,
                 TriagePrioridad = latestTriage.Priority,
                 TriageFechaHora = latestTriage.TriageDateTime,
-                ModalidadAtencion = admission.ModalidadAtencion,
-                MotivoAtencion = admission.MotivoAtencion,
-                ClasificacionServicio = admission.ClasificacionServicio,
-                GrupoServicio = admission.GrupoServicio,
-                Ingreso = admission.Ingreso,
-                AmbitoAtencion = admission.AmbitoAtencion,
-                FinalidadAtencion = admission.FinalidadAtencion,
+                CareModalityId = admission.CareModalityId,
+                CareModalityName = careModality.Name,
+                CareReasonId = admission.CareReasonId,
+                CareReasonName = careReason.Name,
+                ServiceClassificationId = admission.ServiceClassificationId,
+                ServiceClassificationName = serviceClassification.Name,
+                ServiceGroupId = admission.ServiceGroupId,
+                ServiceGroupName = serviceGroup.Name,
+                AdmissionTypeId = admission.AdmissionTypeId,
+                AdmissionTypeName = admissionType.Name,
+                CareScopeId = admission.CareScopeId,
+                CareScopeName = careScope.Name,
+                CarePurposeId = admission.CarePurposeId,
+                CarePurposeName = carePurpose.Name,
                 EpsId = insurer.Id,
                 EpsNombre = insurer.Name,
                 ConvenioId = contract.Id,
@@ -143,6 +179,13 @@ namespace MediNexus.Api.Controllers.Admissions
                 .Include(a => a.Triage)
                 .Include(a => a.Insurer)
                 .Include(a => a.Convenio)
+                .Include(a => a.CareModality)
+                .Include(a => a.CareReason)
+                .Include(a => a.ServiceClassification)
+                .Include(a => a.ServiceGroup)
+                .Include(a => a.AdmissionType)
+                .Include(a => a.CareScope)
+                .Include(a => a.CarePurpose)
                 .FirstOrDefaultAsync();
 
             if (admission is null)
@@ -157,13 +200,20 @@ namespace MediNexus.Api.Controllers.Admissions
                 TriageId = admission.TriageId,
                 TriagePrioridad = admission.Triage.Priority,
                 TriageFechaHora = admission.Triage.TriageDateTime,
-                ModalidadAtencion = admission.ModalidadAtencion,
-                MotivoAtencion = admission.MotivoAtencion,
-                ClasificacionServicio = admission.ClasificacionServicio,
-                GrupoServicio = admission.GrupoServicio,
-                Ingreso = admission.Ingreso,
-                AmbitoAtencion = admission.AmbitoAtencion,
-                FinalidadAtencion = admission.FinalidadAtencion,
+                CareModalityId = admission.CareModalityId,
+                CareModalityName = admission.CareModality.Name,
+                CareReasonId = admission.CareReasonId,
+                CareReasonName = admission.CareReason.Name,
+                ServiceClassificationId = admission.ServiceClassificationId,
+                ServiceClassificationName = admission.ServiceClassification.Name,
+                ServiceGroupId = admission.ServiceGroupId,
+                ServiceGroupName = admission.ServiceGroup.Name,
+                AdmissionTypeId = admission.AdmissionTypeId,
+                AdmissionTypeName = admission.AdmissionType.Name,
+                CareScopeId = admission.CareScopeId,
+                CareScopeName = admission.CareScope.Name,
+                CarePurposeId = admission.CarePurposeId,
+                CarePurposeName = admission.CarePurpose.Name,
                 EpsId = admission.InsurerId,
                 EpsNombre = admission.Insurer.Name,
                 ConvenioId = admission.ConvenioId,
@@ -187,6 +237,13 @@ namespace MediNexus.Api.Controllers.Admissions
                 .Include(a => a.Triage)
                 .Include(a => a.Insurer)
                 .Include(a => a.Convenio)
+                .Include(a => a.CareModality)
+                .Include(a => a.CareReason)
+                .Include(a => a.ServiceClassification)
+                .Include(a => a.ServiceGroup)
+                .Include(a => a.AdmissionType)
+                .Include(a => a.CareScope)
+                .Include(a => a.CarePurpose)
                 .OrderByDescending(a => a.CreatedAt)
                 .Select(a => new AdmissionResponse
                 {
@@ -197,13 +254,20 @@ namespace MediNexus.Api.Controllers.Admissions
                     TriageId = a.TriageId,
                     TriagePrioridad = a.Triage.Priority,
                     TriageFechaHora = a.Triage.TriageDateTime,
-                    ModalidadAtencion = a.ModalidadAtencion,
-                    MotivoAtencion = a.MotivoAtencion,
-                    ClasificacionServicio = a.ClasificacionServicio,
-                    GrupoServicio = a.GrupoServicio,
-                    Ingreso = a.Ingreso,
-                    AmbitoAtencion = a.AmbitoAtencion,
-                    FinalidadAtencion = a.FinalidadAtencion,
+                    CareModalityId = a.CareModalityId,
+                    CareModalityName = a.CareModality.Name,
+                    CareReasonId = a.CareReasonId,
+                    CareReasonName = a.CareReason.Name,
+                    ServiceClassificationId = a.ServiceClassificationId,
+                    ServiceClassificationName = a.ServiceClassification.Name,
+                    ServiceGroupId = a.ServiceGroupId,
+                    ServiceGroupName = a.ServiceGroup.Name,
+                    AdmissionTypeId = a.AdmissionTypeId,
+                    AdmissionTypeName = a.AdmissionType.Name,
+                    CareScopeId = a.CareScopeId,
+                    CareScopeName = a.CareScope.Name,
+                    CarePurposeId = a.CarePurposeId,
+                    CarePurposeName = a.CarePurpose.Name,
                     EpsId = a.InsurerId,
                     EpsNombre = a.Insurer.Name,
                     ConvenioId = a.ConvenioId,
@@ -257,14 +321,43 @@ namespace MediNexus.Api.Controllers.Admissions
             if (contract.InsurerId != request.EpsId)
                 return BadRequest(new { message = "El convenio no pertenece a la EPS especificada. La aseguradora debe estar asociada al contrato." });
 
+            // Validar catalogos y obtener nombres
+            var careModality = await _db.CareModalities.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.CareModalityId && x.IsActive);
+            if (careModality is null)
+                return BadRequest(new { message = "La modalidad de atención especificada no existe o está inactiva." });
+
+            var careReason = await _db.CareReasons.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.CareReasonId && x.IsActive);
+            if (careReason is null)
+                return BadRequest(new { message = "El motivo de atención especificado no existe o está inactivo." });
+
+            var serviceClassification = await _db.ServiceClassifications.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.ServiceClassificationId && x.IsActive);
+            if (serviceClassification is null)
+                return BadRequest(new { message = "La clasificación de servicio especificada no existe o está inactiva." });
+
+            var serviceGroup = await _db.ServiceGroups.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.ServiceGroupId && x.IsActive);
+            if (serviceGroup is null)
+                return BadRequest(new { message = "El grupo de servicio especificado no existe o está inactivo." });
+
+            var admissionType = await _db.AdmissionTypes.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.AdmissionTypeId && x.IsActive);
+            if (admissionType is null)
+                return BadRequest(new { message = "El tipo de ingreso especificado no existe o está inactivo." });
+
+            var careScope = await _db.CareScopes.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.CareScopeId && x.IsActive);
+            if (careScope is null)
+                return BadRequest(new { message = "El ámbito de atención especificado no existe o está inactivo." });
+
+            var carePurpose = await _db.CarePurposes.AsNoTracking().FirstOrDefaultAsync(x => x.Id == request.CarePurposeId && x.IsActive);
+            if (carePurpose is null)
+                return BadRequest(new { message = "La finalidad de atención especificada no existe o está inactiva." });
+
             // Actualizar campos
-            admission.ModalidadAtencion = request.ModalidadAtencion;
-            admission.MotivoAtencion = request.MotivoAtencion;
-            admission.ClasificacionServicio = request.ClasificacionServicio;
-            admission.GrupoServicio = request.GrupoServicio;
-            admission.Ingreso = request.Ingreso;
-            admission.AmbitoAtencion = request.AmbitoAtencion;
-            admission.FinalidadAtencion = request.FinalidadAtencion;
+            admission.CareModalityId = request.CareModalityId;
+            admission.CareReasonId = request.CareReasonId;
+            admission.ServiceClassificationId = request.ServiceClassificationId;
+            admission.ServiceGroupId = request.ServiceGroupId;
+            admission.AdmissionTypeId = request.AdmissionTypeId;
+            admission.CareScopeId = request.CareScopeId;
+            admission.CarePurposeId = request.CarePurposeId;
             admission.InsurerId = request.EpsId;
             admission.ConvenioId = request.ConvenioId;
             admission.UpdatedAt = DateTime.UtcNow;
@@ -280,13 +373,20 @@ namespace MediNexus.Api.Controllers.Admissions
                 TriageId = admission.TriageId,
                 TriagePrioridad = admission.Triage.Priority,
                 TriageFechaHora = admission.Triage.TriageDateTime,
-                ModalidadAtencion = admission.ModalidadAtencion,
-                MotivoAtencion = admission.MotivoAtencion,
-                ClasificacionServicio = admission.ClasificacionServicio,
-                GrupoServicio = admission.GrupoServicio,
-                Ingreso = admission.Ingreso,
-                AmbitoAtencion = admission.AmbitoAtencion,
-                FinalidadAtencion = admission.FinalidadAtencion,
+                CareModalityId = admission.CareModalityId,
+                CareModalityName = careModality.Name,
+                CareReasonId = admission.CareReasonId,
+                CareReasonName = careReason.Name,
+                ServiceClassificationId = admission.ServiceClassificationId,
+                ServiceClassificationName = serviceClassification.Name,
+                ServiceGroupId = admission.ServiceGroupId,
+                ServiceGroupName = serviceGroup.Name,
+                AdmissionTypeId = admission.AdmissionTypeId,
+                AdmissionTypeName = admissionType.Name,
+                CareScopeId = admission.CareScopeId,
+                CareScopeName = careScope.Name,
+                CarePurposeId = admission.CarePurposeId,
+                CarePurposeName = carePurpose.Name,
                 EpsId = admission.InsurerId,
                 EpsNombre = insurer.Name,
                 ConvenioId = admission.ConvenioId,

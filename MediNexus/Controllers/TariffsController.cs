@@ -25,6 +25,7 @@ namespace MediNexus.Api.Controllers
                 .AsNoTracking()
                 .Where(t => t.IsActive)
                 .Include(t => t.ValueMethod)
+                .Include(t => t.Contract)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
@@ -41,6 +42,8 @@ namespace MediNexus.Api.Controllers
                     Name = t.Name,
                     ValueMethodId = t.ValueMethodId,
                     ValueMethodDescription = t.ValueMethod.Description,
+                    ContractId = t.ContractId,
+                    ContractName = t.Contract.ContractName,
                     IsActive = t.IsActive,
                     CreatedAt = t.CreatedAt,
                     UpdatedAt = t.UpdatedAt
@@ -58,12 +61,15 @@ namespace MediNexus.Api.Controllers
                 .AsNoTracking()
                 .Where(t => t.Id == id)
                 .Include(t => t.ValueMethod)
+                .Include(t => t.Contract)
                 .Select(t => new TariffResponse
                 {
                     Id = t.Id,
                     Name = t.Name,
                     ValueMethodId = t.ValueMethodId,
                     ValueMethodDescription = t.ValueMethod.Description,
+                    ContractId = t.ContractId,
+                    ContractName = t.Contract.ContractName,
                     IsActive = t.IsActive,
                     CreatedAt = t.CreatedAt,
                     UpdatedAt = t.UpdatedAt
@@ -86,10 +92,14 @@ namespace MediNexus.Api.Controllers
             if (!await _db.ValueMethods.AnyAsync(v => v.Id == req.ValueMethodId))
                 return BadRequest("Invalid value method.");
 
+            if (!await _db.Contracts.AnyAsync(c => c.Id == req.ContractId))
+                return BadRequest("Invalid contract.");
+
             var tariff = new Tariff
             {
                 Name = req.Name.Trim(),
                 ValueMethodId = req.ValueMethodId,
+                ContractId = req.ContractId,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
@@ -117,8 +127,12 @@ namespace MediNexus.Api.Controllers
             if (!await _db.ValueMethods.AnyAsync(v => v.Id == req.ValueMethodId))
                 return BadRequest("Invalid value method.");
 
+            if (!await _db.Contracts.AnyAsync(c => c.Id == req.ContractId))
+                return BadRequest("Invalid contract.");
+
             tariff.Name = req.Name.Trim();
             tariff.ValueMethodId = req.ValueMethodId;
+            tariff.ContractId = req.ContractId;
             tariff.IsActive = req.IsActive;
             tariff.UpdatedAt = DateTime.UtcNow;
 

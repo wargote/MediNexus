@@ -15,14 +15,22 @@ namespace MediNexus.Domain.Admissions
         public int InsurerId { get; set; }
         public int ConvenioId { get; set; }
 
-        // Parámetros de Admisión (almacenados como texto según el request body del task)
-        public string ModalidadAtencion { get; set; } = null!;
-        public string MotivoAtencion { get; set; } = null!;
-        public string ClasificacionServicio { get; set; } = null!;
-        public string GrupoServicio { get; set; } = null!;
-        public string Ingreso { get; set; } = null!;
-        public string AmbitoAtencion { get; set; } = null!;
-        public string FinalidadAtencion { get; set; } = null!;
+        // Parámetros de Admisión
+        public int CareModalityId { get; set; }
+        public int CareReasonId { get; set; }
+        public int ServiceClassificationId { get; set; }
+        public int ServiceGroupId { get; set; }
+        public int AdmissionTypeId { get; set; }
+        public int CareScopeId { get; set; }
+        public int CarePurposeId { get; set; }
+
+        public CareModality CareModality { get; set; } = null!;
+        public CareReason CareReason { get; set; } = null!;
+        public ServiceClassification ServiceClassification { get; set; } = null!;
+        public ServiceGroup ServiceGroup { get; set; } = null!;
+        public AdmissionType AdmissionType { get; set; } = null!;
+        public CareScope CareScope { get; set; } = null!;
+        public CarePurpose CarePurpose { get; set; } = null!;
 
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

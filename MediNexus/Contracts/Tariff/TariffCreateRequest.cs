@@ -10,5 +10,8 @@ namespace MediNexus.Api.Contracts.Tariff
 
         [Required]
         public int ValueMethodId { get; set; }
+
+        [Required]
+        public int ContractId { get; set; }
     }
 }

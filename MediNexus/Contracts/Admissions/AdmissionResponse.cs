@@ -17,13 +17,26 @@ namespace MediNexus.Api.Contracts.Admissions
         public DateTime TriageFechaHora { get; set; }
 
         // Datos de admisión
-        public string ModalidadAtencion { get; set; } = null!;
-        public string MotivoAtencion { get; set; } = null!;
-        public string ClasificacionServicio { get; set; } = null!;
-        public string GrupoServicio { get; set; } = null!;
-        public string Ingreso { get; set; } = null!;
-        public string AmbitoAtencion { get; set; } = null!;
-        public string FinalidadAtencion { get; set; } = null!;
+        public int CareModalityId { get; set; }
+        public string CareModalityName { get; set; } = null!;
+
+        public int CareReasonId { get; set; }
+        public string CareReasonName { get; set; } = null!;
+
+        public int ServiceClassificationId { get; set; }
+        public string ServiceClassificationName { get; set; } = null!;
+
+        public int ServiceGroupId { get; set; }
+        public string ServiceGroupName { get; set; } = null!;
+
+        public int AdmissionTypeId { get; set; }
+        public string AdmissionTypeName { get; set; } = null!;
+
+        public int CareScopeId { get; set; }
+        public string CareScopeName { get; set; } = null!;
+
+        public int CarePurposeId { get; set; }
+        public string CarePurposeName { get; set; } = null!;
 
         // EPS y Convenio
         public int EpsId { get; set; }

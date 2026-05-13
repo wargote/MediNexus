@@ -3,6 +3,7 @@ using System;
 using MediNexus.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MediNexus.Infrastructure.Migrations
 {
     [DbContext(typeof(MediNexusDbContext))]
-    partial class MediNexusDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260510172454_UpdateAdmissionsFks")]
+    partial class UpdateAdmissionsFks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1635,9 +1638,6 @@ namespace MediNexus.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ContractId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -1662,9 +1662,6 @@ namespace MediNexus.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ContractId")
-                        .HasDatabaseName("IX_Tariffs_ContractId");
 
                     b.HasIndex("ValueMethodId")
                         .HasDatabaseName("IX_Tariffs_ValueMethodId");
@@ -2349,19 +2346,11 @@ namespace MediNexus.Infrastructure.Migrations
 
             modelBuilder.Entity("MediNexus.Domain.Tariffs.Tariff", b =>
                 {
-                    b.HasOne("MediNexus.Domain.Contracts.Contract", "Contract")
-                        .WithMany()
-                        .HasForeignKey("ContractId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("MediNexus.Domain.ParametersContracts.ValueMethod", "ValueMethod")
                         .WithMany()
                         .HasForeignKey("ValueMethodId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Contract");
 
                     b.Navigation("ValueMethod");
                 });

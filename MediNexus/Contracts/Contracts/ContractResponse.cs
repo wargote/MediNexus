@@ -1,4 +1,4 @@
-﻿namespace MediNexus.Api.Contracts.Contracts
+namespace MediNexus.Api.Contracts.Contracts
 {
     public class ContractResponse
     {
@@ -40,6 +40,16 @@
         public string ContractNumber { get; set; } = null!;
         public string ContractName { get; set; } = null!;
         public string InsurerName { get; set; } = null!;
+        public string ContractStatusDescription { get; set; } = null!;
+        public DateOnly StartDate { get; set; }
+        public DateOnly EndDate { get; set; }
+    }
+
+    public class ContractCandidateResponse
+    {
+        public int Id { get; set; }
+        public string ContractNumber { get; set; } = null!;
+        public string ContractName { get; set; } = null!;
         public string ContractStatusDescription { get; set; } = null!;
         public DateOnly StartDate { get; set; }
         public DateOnly EndDate { get; set; }

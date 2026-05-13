@@ -1,4 +1,4 @@
-﻿using MediNexus.Api.Contracts.Contracts;
+using MediNexus.Api.Contracts.Contracts;
 using MediNexus.Domain.Contracts;
 using MediNexus.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
@@ -34,6 +34,40 @@ namespace MediNexus.Api.Controllers.Contracts
                     ContractNumber = x.ContractNumber,
                     ContractName = x.ContractName,
                     InsurerName = x.Insurer.Name,
+                    ContractStatusDescription = x.ContractStatus.Description,
+                    StartDate = x.StartDate,
+                    EndDate = x.EndDate
+                })
+                .ToListAsync();
+
+            return Ok(contracts);
+        }
+
+        /// <summary>
+        /// Obtiene los contratos (candidatos) asociados a una aseguradora específica.
+        /// Solo retorna contratos activos.
+        /// </summary>
+        [HttpGet("by-insurer/{insurerId:int}")]
+        [ProducesResponseType(typeof(IEnumerable<ContractCandidateResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetByInsurer(int insurerId)
+        {
+            var insurerExists = await _context.Insurers
+                .AnyAsync(x => x.Id == insurerId && x.IsActive);
+
+            if (!insurerExists)
+                return NotFound(new { message = "La aseguradora especificada no existe o está inactiva." });
+
+            var contracts = await _context.Contracts
+                .AsNoTracking()
+                .Where(x => x.InsurerId == insurerId && x.IsActive)
+                .Include(x => x.ContractStatus)
+                .OrderByDescending(x => x.Id)
+                .Select(x => new ContractCandidateResponse
+                {
+                    Id = x.Id,
+                    ContractNumber = x.ContractNumber,
+                    ContractName = x.ContractName,
                     ContractStatusDescription = x.ContractStatus.Description,
                     StartDate = x.StartDate,
                     EndDate = x.EndDate
