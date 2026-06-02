@@ -69,6 +69,8 @@ namespace MediNexus.Infrastructure.Persistence
         public DbSet<PharmaceuticalForm> PharmaceuticalForms => Set<PharmaceuticalForm>();
         public DbSet<Presentation> Presentations => Set<Presentation>();
         public DbSet<MedicineGroup> MedicineGroups => Set<MedicineGroup>();
+        public DbSet<ElementType> ElementTypes => Set<ElementType>();
+        public DbSet<ElementUsage> ElementUsages => Set<ElementUsage>();
 
         //Contracts
         public DbSet<ValueMethod> ValueMethods => Set<ValueMethod>();
@@ -231,6 +233,9 @@ namespace MediNexus.Infrastructure.Persistence
             ConfigureCoverage(modelBuilder);
             ConfigureContractStatus(modelBuilder);
             ConfigureContract(modelBuilder);
+
+            ConfigureElementType(modelBuilder);
+            ConfigureElementUsage(modelBuilder);
 
             ConfigureAdmissionParameters(modelBuilder);
             ConfigureAdmission(modelBuilder);
@@ -1467,6 +1472,34 @@ namespace MediNexus.Infrastructure.Persistence
 
             entity.HasIndex(x => x.SurgicalGroupId)
                 .HasDatabaseName("IX_TariffDetails_SurgicalGroupId");
+        }
+
+        private static void ConfigureElementType(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ElementType>(entity =>
+            {
+                entity.ToTable("ElementTypes");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Name).IsRequired().HasMaxLength(150);
+                entity.Property(x => x.IsActive).IsRequired().HasDefaultValue(true);
+                entity.Property(x => x.CreatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.Property(x => x.UpdatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.HasIndex(x => x.Name).IsUnique();
+            });
+        }
+
+        private static void ConfigureElementUsage(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ElementUsage>(entity =>
+            {
+                entity.ToTable("ElementUsages");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Name).IsRequired().HasMaxLength(150);
+                entity.Property(x => x.IsActive).IsRequired().HasDefaultValue(true);
+                entity.Property(x => x.CreatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.Property(x => x.UpdatedAt).IsRequired().HasDefaultValueSql("now()");
+                entity.HasIndex(x => x.Name).IsUnique();
+            });
         }
     }
 }
