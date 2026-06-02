@@ -71,6 +71,7 @@ namespace MediNexus.Infrastructure.Persistence
         public DbSet<MedicineGroup> MedicineGroups => Set<MedicineGroup>();
         public DbSet<ElementType> ElementTypes => Set<ElementType>();
         public DbSet<ElementUsage> ElementUsages => Set<ElementUsage>();
+        public DbSet<MedicalDevice> MedicalDevices => Set<MedicalDevice>();
 
         //Contracts
         public DbSet<ValueMethod> ValueMethods => Set<ValueMethod>();
@@ -236,6 +237,7 @@ namespace MediNexus.Infrastructure.Persistence
 
             ConfigureElementType(modelBuilder);
             ConfigureElementUsage(modelBuilder);
+            ConfigureMedicalDevice(modelBuilder);
 
             ConfigureAdmissionParameters(modelBuilder);
             ConfigureAdmission(modelBuilder);
@@ -1499,6 +1501,64 @@ namespace MediNexus.Infrastructure.Persistence
                 entity.Property(x => x.CreatedAt).IsRequired().HasDefaultValueSql("now()");
                 entity.Property(x => x.UpdatedAt).IsRequired().HasDefaultValueSql("now()");
                 entity.HasIndex(x => x.Name).IsUnique();
+            });
+        }
+
+        private static void ConfigureMedicalDevice(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<MedicalDevice>(entity =>
+            {
+                entity.ToTable("MedicalDevices");
+
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.ElementName)
+                    .IsRequired()
+                    .HasMaxLength(300);
+
+                entity.Property(x => x.RipsCode)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(x => x.IsReusable)
+                    .IsRequired();
+
+                entity.Property(x => x.IsInvasive)
+                    .IsRequired();
+
+                entity.Property(x => x.IsActive)
+                    .IsRequired()
+                    .HasDefaultValue(true);
+
+                entity.Property(x => x.CreatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+
+                entity.Property(x => x.UpdatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+
+                entity.HasOne(x => x.ElementType)
+                    .WithMany()
+                    .HasForeignKey(x => x.ElementTypeId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.ElementUsage)
+                    .WithMany()
+                    .HasForeignKey(x => x.ElementUsageId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(x => x.ElementName)
+                    .HasDatabaseName("IX_MedicalDevices_ElementName");
+
+                entity.HasIndex(x => x.RipsCode)
+                    .HasDatabaseName("IX_MedicalDevices_RipsCode");
+
+                entity.HasIndex(x => x.ElementTypeId)
+                    .HasDatabaseName("IX_MedicalDevices_ElementTypeId");
+
+                entity.HasIndex(x => x.ElementUsageId)
+                    .HasDatabaseName("IX_MedicalDevices_ElementUsageId");
             });
         }
     }
