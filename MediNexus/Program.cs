@@ -1,4 +1,5 @@
 using MediNexus.Infrastructure.Persistence;
+using MediNexus.Infrastructure.Seeders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -17,29 +18,23 @@ builder.Services.AddCors(opt =>
              "http://localhost:3000",
              "https://my-system-medic.vercel.app"
           )
-         .AllowAnyHeader()            // Authorization, Content-Type, etc.
-         .AllowAnyMethod()            // GET, POST, PUT, DELETE, ...
-         .AllowCredentials();         // solo si usas cookies; con JWT no es necesario
-                                      // Si NO usas cookies, quita .AllowCredentials() y usa .SetIsOriginAllowed(_ => true) solo en dev
+         .AllowAnyHeader()
+         .AllowAnyMethod()
+         .AllowCredentials();
     });
 });
 
-// DbContext (usa la misma clave "Sql")
-// DbContext (misma clave "Sql")
+// DbContext
 builder.Services.AddDbContext<MediNexusDbContext>(opt =>
     opt.UseNpgsql(
         builder.Configuration.GetConnectionString("Sql"),
         npgsql =>
         {
-            // Resiliencia ante fallos transitorios (red/timeouts)
             npgsql.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-
-            // Timeout de comandos (segundos)
             npgsql.CommandTimeout(60);
         }
     )
 );
-
 
 // Auth (JWT)
 var jwt = builder.Configuration.GetSection("Jwt");
@@ -62,9 +57,6 @@ builder.Services
         };
     });
 
-
-
-
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -72,43 +64,24 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// ===== Aplicar migraciones pendientes al inicio =====
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<MediNexusDbContext>();
+    await db.Database.MigrateAsync();
+}
+// ===== fin migraciones =====
 
-// ===== Aplicar migraciones y crear Admin si no existe =====
-//using (var scope = app.Services.CreateScope())
-//{
-//    var db = scope.ServiceProvider.GetRequiredService<MediNexusDbContext>();
-//    await db.Database.MigrateAsync();
-
-//    var hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
-
-//    var adminEmail = app.Configuration["Admin:Email"];
-//    var adminPassword = app.Configuration["Admin:Password"];
-
-//    if (!string.IsNullOrWhiteSpace(adminEmail) && !string.IsNullOrWhiteSpace(adminPassword))
-//    {
-//        // Ajusta los nombres de propiedades según tu entidad User
-//        var exists = await db.Set<User>()
-//            .FirstOrDefaultAsync(u => u.Email == adminEmail);
-
-//        if (exists is null)
-//        {
-//            var admin = new User
-//            {
-//                // Ejemplos de campos comunes — ajusta a tu modelo
-//                Email = adminEmail,
-//                Name = "System Admin",
-//                Role = "Admin",           // o UserRole.Admin si usas enum
-//                IsActive = true,
-//                CreatedAt = DateTime.UtcNow
-//            };
-
-//            admin.PasswordHash = hasher.Hash(adminPassword);
-//            db.Add(admin);
-//            await db.SaveChangesAsync();
-//        }
-//    }
-//}
-// ===== fin seed =====
+// ===== Seed CIE-10 =====
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<MediNexusDbContext>();
+    var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+    var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
+    var cie10Seeder = new Cie10Seeder(db, config, loggerFactory.CreateLogger<Cie10Seeder>());
+    await cie10Seeder.SeedAsync();
+}
+// ===== fin seed CIE-10 =====
 
 if (app.Environment.IsDevelopment())
 {
