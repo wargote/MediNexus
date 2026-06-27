@@ -3,6 +3,7 @@ using System;
 using MediNexus.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MediNexus.Infrastructure.Migrations
 {
     [DbContext(typeof(MediNexusDbContext))]
-    partial class MediNexusDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260627194934_RenameCie10ToCie10Codes")]
+    partial class RenameCie10ToCie10Codes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -560,7 +563,7 @@ namespace MediNexus.Infrastructure.Migrations
                     b.ToTable("AnalisisDiagnosticosPlan_HCinicial_Diagnosticos", (string)null);
                 });
 
-            modelBuilder.Entity("MediNexus.Domain.HCInicial.Cie10Code", b =>
+            modelBuilder.Entity("MediNexus.Domain.HCInicial.Cie10", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2772,7 +2775,7 @@ namespace MediNexus.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MediNexus.Domain.HCInicial.Cie10Code", "Cie10Code")
+                    b.HasOne("MediNexus.Domain.HCInicial.Cie10", "Cie10")
                         .WithMany()
                         .HasForeignKey("IdCie10")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -2780,7 +2783,7 @@ namespace MediNexus.Infrastructure.Migrations
 
                     b.Navigation("AnalisisDiagnosticosPlan");
 
-                    b.Navigation("Cie10Code");
+                    b.Navigation("Cie10");
                 });
 
             modelBuilder.Entity("MediNexus.Domain.HCInicial.Evolucion", b =>
