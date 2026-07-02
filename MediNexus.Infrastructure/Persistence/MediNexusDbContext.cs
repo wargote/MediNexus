@@ -10,6 +10,7 @@ using MediNexus.Domain.NavegationMenus;
 using MediNexus.Domain.ParametersContracts;
 using MediNexus.Domain.Providers;
 using MediNexus.Domain.Patients;
+using MediNexus.Domain.Diagnoses;
 using MediNexus.Domain.Tariffs;
 using MediNexus.Domain.Triages;
 using MediNexus.Domain.Users;
@@ -94,6 +95,9 @@ namespace MediNexus.Infrastructure.Persistence
 
         //Admissions
         public DbSet<Admission> Admissions => Set<Admission>();
+
+        // Diagnoses
+        public DbSet<Cie10Code> Cie10Codes => Set<Cie10Code>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -241,6 +245,8 @@ namespace MediNexus.Infrastructure.Persistence
 
             ConfigureAdmissionParameters(modelBuilder);
             ConfigureAdmission(modelBuilder);
+
+            ConfigureCie10Code(modelBuilder);
         }
 
         private static void ConfigureAdmissionParameters(ModelBuilder modelBuilder)
@@ -1560,6 +1566,29 @@ namespace MediNexus.Infrastructure.Persistence
                 entity.HasIndex(x => x.ElementUsageId)
                     .HasDatabaseName("IX_MedicalDevices_ElementUsageId");
             });
+        }
+
+        private static void ConfigureCie10Code(ModelBuilder modelBuilder)
+        {
+            var entity = modelBuilder.Entity<Cie10Code>();
+
+            entity.ToTable("Cie10Codes");
+
+            // Natural primary key: COD_4 VARCHAR(4)
+            entity.HasKey(x => x.Cod4);
+
+            entity.Property(x => x.Cod4)
+                .IsRequired()
+                .HasMaxLength(4)
+                .HasColumnName("COD_4");
+
+            entity.Property(x => x.DescripcionCodigoCuatroCaracteres)
+                .IsRequired()
+                .HasMaxLength(500)
+                .HasColumnName("DESCRIPCION_CODIGO_CUATRO_CARACTERES");
+
+            entity.HasIndex(x => x.DescripcionCodigoCuatroCaracteres)
+                .HasDatabaseName("IX_Cie10Codes_Descripcion");
         }
     }
 }
