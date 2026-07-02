@@ -3,6 +3,7 @@ using MediNexus.Domain.Administrator;
 using MediNexus.Domain.Admissions;
 using MediNexus.Domain.Admissions.ParametersAdmission;
 using MediNexus.Domain.Contracts;
+using MediNexus.Domain.HCInicial;
 using MediNexus.Domain.Insurers;
 using MediNexus.Domain.Location;
 using MediNexus.Domain.Medicines;
@@ -10,7 +11,6 @@ using MediNexus.Domain.NavegationMenus;
 using MediNexus.Domain.ParametersContracts;
 using MediNexus.Domain.Providers;
 using MediNexus.Domain.Patients;
-using MediNexus.Domain.Diagnoses;
 using MediNexus.Domain.Tariffs;
 using MediNexus.Domain.Triages;
 using MediNexus.Domain.Users;
@@ -96,8 +96,16 @@ namespace MediNexus.Infrastructure.Persistence
         //Admissions
         public DbSet<Admission> Admissions => Set<Admission>();
 
-        // Diagnoses
+        //HC Inicial
+        public DbSet<SubjetivoHCInicial> SubjetivosHCInicial => Set<SubjetivoHCInicial>();
+        public DbSet<ObjetivoHCInicial> ObjetivosHCInicial => Set<ObjetivoHCInicial>();
+        public DbSet<SignosVitalesHCInicial> SignosVitalesHCInicial => Set<SignosVitalesHCInicial>();
         public DbSet<Cie10Code> Cie10Codes => Set<Cie10Code>();
+        public DbSet<AnalisisDiagnosticosPlanHCInicial> AnalisisDiagnosticosPlanHCInicial => Set<AnalisisDiagnosticosPlanHCInicial>();
+        public DbSet<AnalisisDiagnosticosPlanHCInicialDiagnostico> AnalisisDiagnosticosPlanHCInicialDiagnosticos => Set<AnalisisDiagnosticosPlanHCInicialDiagnostico>();
+        public DbSet<HCInicial> HCIniciales => Set<HCInicial>();
+        public DbSet<Evolucion> Evoluciones => Set<Evolucion>();
+        public DbSet<EvolucionEspecialista> EvolucionesEspecialistas => Set<EvolucionEspecialista>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -245,8 +253,6 @@ namespace MediNexus.Infrastructure.Persistence
 
             ConfigureAdmissionParameters(modelBuilder);
             ConfigureAdmission(modelBuilder);
-
-            ConfigureCie10Code(modelBuilder);
         }
 
         private static void ConfigureAdmissionParameters(ModelBuilder modelBuilder)
@@ -1510,6 +1516,326 @@ namespace MediNexus.Infrastructure.Persistence
             });
         }
 
+        private static void ConfigureSubjetivoHCInicial(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SubjetivoHCInicial>(entity =>
+            {
+                entity.ToTable("Subjetivo_HCinicial");
+
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.MotivoConsulta)
+                    .IsRequired()
+                    .HasMaxLength(300);
+
+                entity.Property(x => x.EnfermedadActual)
+                    .IsRequired()
+                    .HasMaxLength(1000);
+
+                entity.Property(x => x.IsActive)
+                    .IsRequired()
+                    .HasDefaultValue(true);
+
+                entity.Property(x => x.CreatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+
+                entity.Property(x => x.UpdatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+            });
+        }
+
+        private static void ConfigureObjetivoHCInicial(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ObjetivoHCInicial>(entity =>
+            {
+                entity.ToTable("Objetivo_HCinicial");
+
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.CabezaCuello).HasMaxLength(1000);
+                entity.Property(x => x.Torax).HasMaxLength(1000);
+                entity.Property(x => x.Abdomen).HasMaxLength(1000);
+                entity.Property(x => x.Extremidades).HasMaxLength(1000);
+                entity.Property(x => x.SistemaNervioso).HasMaxLength(1000);
+                entity.Property(x => x.OrganosSentidos).HasMaxLength(1000);
+                entity.Property(x => x.Genitourinario).HasMaxLength(1000);
+                entity.Property(x => x.Padres).HasMaxLength(1000);
+                entity.Property(x => x.PersonalesMedicos).HasMaxLength(1000);
+                entity.Property(x => x.OtrosFamiliares).HasMaxLength(1000);
+                entity.Property(x => x.Alergicos).HasMaxLength(1000);
+                entity.Property(x => x.Quirurgicos).HasMaxLength(1000);
+                entity.Property(x => x.Toxicos).HasMaxLength(1000);
+                entity.Property(x => x.Transfusiones).HasMaxLength(1000);
+                entity.Property(x => x.Habitos).HasMaxLength(1000);
+                entity.Property(x => x.Traumas).HasMaxLength(1000);
+
+                entity.Property(x => x.IsActive)
+                    .IsRequired()
+                    .HasDefaultValue(true);
+
+                entity.Property(x => x.CreatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+
+                entity.Property(x => x.UpdatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+            });
+        }
+
+        private static void ConfigureSignosVitalesHCInicial(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SignosVitalesHCInicial>(entity =>
+            {
+                entity.ToTable("SignosVitales_HCinicial");
+
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.TensionArterial).HasMaxLength(20);
+                entity.Property(x => x.Temperatura).HasColumnType("decimal(4,1)");
+                entity.Property(x => x.Peso).HasColumnType("decimal(5,2)");
+                entity.Property(x => x.Talla).HasColumnType("decimal(4,2)");
+                entity.Property(x => x.IMC).HasColumnType("decimal(5,2)");
+
+                entity.Property(x => x.IsActive)
+                    .IsRequired()
+                    .HasDefaultValue(true);
+
+                entity.Property(x => x.CreatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+
+                entity.Property(x => x.UpdatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+            });
+        }
+
+        private static void ConfigureCie10Code(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Cie10Code>(entity =>
+            {
+                entity.ToTable("Cie10Codes");
+
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Codigo)
+                    .IsRequired()
+                    .HasMaxLength(10);
+
+                entity.Property(x => x.Descripcion)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(x => x.IsActive)
+                    .IsRequired()
+                    .HasDefaultValue(true);
+
+                entity.Property(x => x.CreatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+
+                entity.Property(x => x.UpdatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+
+                entity.HasIndex(x => x.Codigo)
+                    .IsUnique()
+                    .HasDatabaseName("IX_Cie10Codes_Codigo");
+            });
+        }
+
+        private static void ConfigureAnalisisDiagnosticosPlanHCInicial(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AnalisisDiagnosticosPlanHCInicial>(entity =>
+            {
+                entity.ToTable("AnalisisDiagnosticosPlan_HCinicial");
+
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Analisis).HasMaxLength(1000);
+                entity.Property(x => x.Plan).HasMaxLength(1000);
+
+                entity.Property(x => x.IsActive)
+                    .IsRequired()
+                    .HasDefaultValue(true);
+
+                entity.Property(x => x.CreatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+
+                entity.Property(x => x.UpdatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+            });
+        }
+
+        private static void ConfigureAnalisisDiagnosticosPlanHCInicialDiagnostico(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AnalisisDiagnosticosPlanHCInicialDiagnostico>(entity =>
+            {
+                entity.ToTable("AnalisisDiagnosticosPlan_HCinicial_Diagnosticos");
+
+                entity.HasKey(x => new { x.IdAnalisisDiagnosticosPlan, x.IdCie10 });
+
+                entity.HasOne(x => x.AnalisisDiagnosticosPlan)
+                    .WithMany(a => a.Diagnosticos)
+                    .HasForeignKey(x => x.IdAnalisisDiagnosticosPlan)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(x => x.Cie10Code)
+                    .WithMany()
+                    .HasForeignKey(x => x.IdCie10)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+        }
+
+        private static void ConfigureHCInicial(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<HCInicial>(entity =>
+            {
+                entity.ToTable("HCInicial");
+
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.IsActive)
+                    .IsRequired()
+                    .HasDefaultValue(true);
+
+                entity.Property(x => x.CreatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+
+                entity.Property(x => x.UpdatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+
+                entity.HasOne(x => x.Admission)
+                    .WithMany()
+                    .HasForeignKey(x => x.AdmissionId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Subjetivo)
+                    .WithMany()
+                    .HasForeignKey(x => x.IdSubjetivoHCInicial)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Objetivo)
+                    .WithMany()
+                    .HasForeignKey(x => x.IdObjetivoHCInicial)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.SignosVitales)
+                    .WithMany()
+                    .HasForeignKey(x => x.IdSignosVitalesHCInicial)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.AnalisisDiagnosticosPlan)
+                    .WithMany()
+                    .HasForeignKey(x => x.IdAnalisisDiagnosticosPlanHCInicial)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(x => x.AdmissionId)
+                    .HasDatabaseName("IX_HCInicial_AdmissionId");
+
+                entity.HasIndex(x => x.IdSubjetivoHCInicial)
+                    .HasDatabaseName("IX_HCInicial_IdSubjetivoHCInicial");
+
+                entity.HasIndex(x => x.IdObjetivoHCInicial)
+                    .HasDatabaseName("IX_HCInicial_IdObjetivoHCInicial");
+
+                entity.HasIndex(x => x.IdSignosVitalesHCInicial)
+                    .HasDatabaseName("IX_HCInicial_IdSignosVitalesHCInicial");
+
+                entity.HasIndex(x => x.IdAnalisisDiagnosticosPlanHCInicial)
+                    .HasDatabaseName("IX_HCInicial_IdAnalisisDiagnosticosPlanHCInicial");
+            });
+        }
+
+        private static void ConfigureEvolucion(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Evolucion>(entity =>
+            {
+                entity.ToTable("Evoluciones");
+
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.MotivoConsulta)
+                    .IsRequired()
+                    .HasMaxLength(1000);
+
+                entity.Property(x => x.TensionArterial).HasMaxLength(20);
+                entity.Property(x => x.Temperatura).HasColumnType("decimal(4,1)");
+                entity.Property(x => x.Peso).HasColumnType("decimal(5,2)");
+                entity.Property(x => x.Talla).HasColumnType("decimal(4,2)");
+                entity.Property(x => x.IMC).HasColumnType("decimal(5,2)");
+
+                entity.Property(x => x.Plan)
+                    .IsRequired()
+                    .HasMaxLength(1000);
+
+                entity.Property(x => x.IsActive)
+                    .IsRequired()
+                    .HasDefaultValue(true);
+
+                entity.Property(x => x.CreatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+
+                entity.Property(x => x.UpdatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+
+                entity.HasOne(x => x.Admission)
+                    .WithMany()
+                    .HasForeignKey(x => x.AdmissionId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(x => x.AdmissionId)
+                    .HasDatabaseName("IX_Evoluciones_AdmissionId");
+            });
+        }
+
+        private static void ConfigureEvolucionEspecialista(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<EvolucionEspecialista>(entity =>
+            {
+                entity.ToTable("EvolucionEspecialistas");
+
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.MotivoConsulta)
+                    .IsRequired()
+                    .HasMaxLength(1000);
+
+                entity.Property(x => x.Plan)
+                    .IsRequired()
+                    .HasMaxLength(1000);
+
+                entity.Property(x => x.IsActive)
+                    .IsRequired()
+                    .HasDefaultValue(true);
+
+                entity.Property(x => x.CreatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+
+                entity.Property(x => x.UpdatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("now()");
+
+                entity.HasOne(x => x.Admission)
+                    .WithMany()
+                    .HasForeignKey(x => x.AdmissionId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(x => x.AdmissionId)
+                    .HasDatabaseName("IX_EvolucionEspecialistas_AdmissionId");
+            });
+        }
+
         private static void ConfigureMedicalDevice(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<MedicalDevice>(entity =>
@@ -1566,29 +1892,6 @@ namespace MediNexus.Infrastructure.Persistence
                 entity.HasIndex(x => x.ElementUsageId)
                     .HasDatabaseName("IX_MedicalDevices_ElementUsageId");
             });
-        }
-
-        private static void ConfigureCie10Code(ModelBuilder modelBuilder)
-        {
-            var entity = modelBuilder.Entity<Cie10Code>();
-
-            entity.ToTable("Cie10Codes");
-
-            // Natural primary key: COD_4 VARCHAR(4)
-            entity.HasKey(x => x.Cod4);
-
-            entity.Property(x => x.Cod4)
-                .IsRequired()
-                .HasMaxLength(4)
-                .HasColumnName("COD_4");
-
-            entity.Property(x => x.DescripcionCodigoCuatroCaracteres)
-                .IsRequired()
-                .HasMaxLength(500)
-                .HasColumnName("DESCRIPCION_CODIGO_CUATRO_CARACTERES");
-
-            entity.HasIndex(x => x.DescripcionCodigoCuatroCaracteres)
-                .HasDatabaseName("IX_Cie10Codes_Descripcion");
         }
     }
 }

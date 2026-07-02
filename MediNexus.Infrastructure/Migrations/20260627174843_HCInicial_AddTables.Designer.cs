@@ -3,6 +3,7 @@ using System;
 using MediNexus.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MediNexus.Infrastructure.Migrations
 {
     [DbContext(typeof(MediNexusDbContext))]
-    partial class MediNexusDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260627174843_HCInicial_AddTables")]
+    partial class HCInicial_AddTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -509,215 +512,6 @@ namespace MediNexus.Infrastructure.Migrations
                     b.ToTable("ContractStatuses", (string)null);
                 });
 
-            modelBuilder.Entity("MediNexus.Domain.HCInicial.AnalisisDiagnosticosPlanHCInicial", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Analisis")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("Plan")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AnalisisDiagnosticosPlan_HCinicial", (string)null);
-                });
-
-            modelBuilder.Entity("MediNexus.Domain.HCInicial.AnalisisDiagnosticosPlanHCInicialDiagnostico", b =>
-                {
-                    b.Property<int>("IdAnalisisDiagnosticosPlan")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("IdCie10")
-                        .HasColumnType("integer");
-
-                    b.HasKey("IdAnalisisDiagnosticosPlan", "IdCie10");
-
-                    b.HasIndex("IdCie10");
-
-                    b.ToTable("AnalisisDiagnosticosPlan_HCinicial_Diagnosticos", (string)null);
-                });
-
-            modelBuilder.Entity("MediNexus.Domain.HCInicial.Cie10Code", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Codigo")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<string>("Descripcion")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Codigo")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Cie10Codes_Codigo");
-
-                    b.ToTable("Cie10Codes", (string)null);
-                });
-
-            modelBuilder.Entity("MediNexus.Domain.HCInicial.Evolucion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AdmissionId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<int?>("FrecuenciaCardiaca")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("FrecuenciaRespiratoria")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("Glasgow")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal?>("IMC")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("MotivoConsulta")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<decimal?>("Peso")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<string>("Plan")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<int?>("SaturacionOxigeno")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal?>("Talla")
-                        .HasColumnType("decimal(4,2)");
-
-                    b.Property<decimal?>("Temperatura")
-                        .HasColumnType("decimal(4,1)");
-
-                    b.Property<string>("TensionArterial")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AdmissionId")
-                        .HasDatabaseName("IX_Evoluciones_AdmissionId");
-
-                    b.ToTable("Evoluciones", (string)null);
-                });
-
-            modelBuilder.Entity("MediNexus.Domain.HCInicial.EvolucionEspecialista", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AdmissionId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("MotivoConsulta")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Plan")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AdmissionId")
-                        .HasDatabaseName("IX_EvolucionEspecialistas_AdmissionId");
-
-                    b.ToTable("EvolucionEspecialistas", (string)null);
-                });
-
             modelBuilder.Entity("MediNexus.Domain.HCInicial.HCInicial", b =>
                 {
                     b.Property<int>("Id")
@@ -733,15 +527,6 @@ namespace MediNexus.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("now()");
-
-                    b.Property<int?>("IdAnalisisDiagnosticosPlanHCInicial")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("IdObjetivoHCInicial")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("IdSignosVitalesHCInicial")
-                        .HasColumnType("integer");
 
                     b.Property<int?>("IdSubjetivoHCInicial")
                         .HasColumnType("integer");
@@ -761,167 +546,10 @@ namespace MediNexus.Infrastructure.Migrations
                     b.HasIndex("AdmissionId")
                         .HasDatabaseName("IX_HCInicial_AdmissionId");
 
-                    b.HasIndex("IdAnalisisDiagnosticosPlanHCInicial")
-                        .HasDatabaseName("IX_HCInicial_IdAnalisisDiagnosticosPlanHCInicial");
-
-                    b.HasIndex("IdObjetivoHCInicial")
-                        .HasDatabaseName("IX_HCInicial_IdObjetivoHCInicial");
-
-                    b.HasIndex("IdSignosVitalesHCInicial")
-                        .HasDatabaseName("IX_HCInicial_IdSignosVitalesHCInicial");
-
                     b.HasIndex("IdSubjetivoHCInicial")
                         .HasDatabaseName("IX_HCInicial_IdSubjetivoHCInicial");
 
                     b.ToTable("HCInicial", (string)null);
-                });
-
-            modelBuilder.Entity("MediNexus.Domain.HCInicial.ObjetivoHCInicial", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Abdomen")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Alergicos")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("CabezaCuello")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<string>("Extremidades")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Genitourinario")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Habitos")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("OrganosSentidos")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("OtrosFamiliares")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Padres")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("PersonalesMedicos")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Quirurgicos")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("SistemaNervioso")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Torax")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Toxicos")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Transfusiones")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Traumas")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Objetivo_HCinicial", (string)null);
-                });
-
-            modelBuilder.Entity("MediNexus.Domain.HCInicial.SignosVitalesHCInicial", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<int?>("FrecuenciaCardiaca")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("FrecuenciaRespiratoria")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("Glasgow")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal?>("IMC")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
-
-                    b.Property<decimal?>("Peso")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<int?>("SaturacionOxigeno")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal?>("Talla")
-                        .HasColumnType("decimal(4,2)");
-
-                    b.Property<decimal?>("Temperatura")
-                        .HasColumnType("decimal(4,1)");
-
-                    b.Property<string>("TensionArterial")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SignosVitales_HCinicial", (string)null);
                 });
 
             modelBuilder.Entity("MediNexus.Domain.HCInicial.SubjetivoHCInicial", b =>
@@ -2764,47 +2392,6 @@ namespace MediNexus.Infrastructure.Migrations
                     b.Navigation("ValueMethod");
                 });
 
-            modelBuilder.Entity("MediNexus.Domain.HCInicial.AnalisisDiagnosticosPlanHCInicialDiagnostico", b =>
-                {
-                    b.HasOne("MediNexus.Domain.HCInicial.AnalisisDiagnosticosPlanHCInicial", "AnalisisDiagnosticosPlan")
-                        .WithMany("Diagnosticos")
-                        .HasForeignKey("IdAnalisisDiagnosticosPlan")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MediNexus.Domain.HCInicial.Cie10Code", "Cie10Code")
-                        .WithMany()
-                        .HasForeignKey("IdCie10")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("AnalisisDiagnosticosPlan");
-
-                    b.Navigation("Cie10Code");
-                });
-
-            modelBuilder.Entity("MediNexus.Domain.HCInicial.Evolucion", b =>
-                {
-                    b.HasOne("MediNexus.Domain.Admissions.Admission", "Admission")
-                        .WithMany()
-                        .HasForeignKey("AdmissionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Admission");
-                });
-
-            modelBuilder.Entity("MediNexus.Domain.HCInicial.EvolucionEspecialista", b =>
-                {
-                    b.HasOne("MediNexus.Domain.Admissions.Admission", "Admission")
-                        .WithMany()
-                        .HasForeignKey("AdmissionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Admission");
-                });
-
             modelBuilder.Entity("MediNexus.Domain.HCInicial.HCInicial", b =>
                 {
                     b.HasOne("MediNexus.Domain.Admissions.Admission", "Admission")
@@ -2813,33 +2400,12 @@ namespace MediNexus.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MediNexus.Domain.HCInicial.AnalisisDiagnosticosPlanHCInicial", "AnalisisDiagnosticosPlan")
-                        .WithMany()
-                        .HasForeignKey("IdAnalisisDiagnosticosPlanHCInicial")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("MediNexus.Domain.HCInicial.ObjetivoHCInicial", "Objetivo")
-                        .WithMany()
-                        .HasForeignKey("IdObjetivoHCInicial")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("MediNexus.Domain.HCInicial.SignosVitalesHCInicial", "SignosVitales")
-                        .WithMany()
-                        .HasForeignKey("IdSignosVitalesHCInicial")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("MediNexus.Domain.HCInicial.SubjetivoHCInicial", "Subjetivo")
                         .WithMany()
                         .HasForeignKey("IdSubjetivoHCInicial")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Admission");
-
-                    b.Navigation("AnalisisDiagnosticosPlan");
-
-                    b.Navigation("Objetivo");
-
-                    b.Navigation("SignosVitales");
 
                     b.Navigation("Subjetivo");
                 });
@@ -3201,11 +2767,6 @@ namespace MediNexus.Infrastructure.Migrations
             modelBuilder.Entity("MediNexus.Domain.Contracts.ContractStatus", b =>
                 {
                     b.Navigation("Contracts");
-                });
-
-            modelBuilder.Entity("MediNexus.Domain.HCInicial.AnalisisDiagnosticosPlanHCInicial", b =>
-                {
-                    b.Navigation("Diagnosticos");
                 });
 
             modelBuilder.Entity("MediNexus.Domain.Location.City", b =>
