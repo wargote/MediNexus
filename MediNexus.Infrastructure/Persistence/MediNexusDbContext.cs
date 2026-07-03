@@ -253,6 +253,15 @@ namespace MediNexus.Infrastructure.Persistence
 
             ConfigureAdmissionParameters(modelBuilder);
             ConfigureAdmission(modelBuilder);
+            ConfigureCie10Code(modelBuilder);
+            ConfigureSubjetivoHCInicial(modelBuilder);
+            ConfigureObjetivoHCInicial(modelBuilder);
+            ConfigureSignosVitalesHCInicial(modelBuilder);
+            ConfigureAnalisisDiagnosticosPlanHCInicial(modelBuilder);
+            ConfigureAnalisisDiagnosticosPlanHCInicialDiagnostico(modelBuilder);
+            ConfigureHCInicial(modelBuilder);
+            ConfigureEvolucion(modelBuilder);
+            ConfigureEvolucionEspecialista(modelBuilder);
         }
 
         private static void ConfigureAdmissionParameters(ModelBuilder modelBuilder)
